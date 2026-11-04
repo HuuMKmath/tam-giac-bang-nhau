@@ -752,6 +752,7 @@ const RECAP=[
 /* ============ Trạng thái ============ */
 const state={view:'home',name:'',ans:{},pr:{},perm:{},result:null,topicPct:{},weak:[],t0:0,elapsed:0,timedOut:false,code:''};
 const LIMIT={test:25*60,quick:5*60}; // giây
+const SHEET_URL=''; // địa chỉ Google Apps Script (kết thúc bằng /exec); để trống thì chỉ dùng mã gửi tay
 let tick=null;
 function fmtTime(s){s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
 function stopTimer(){if(tick){clearInterval(tick);tick=null;}}
@@ -1072,6 +1073,18 @@ function makeCode(r){
   const o={v:1,n:state.name||'Học sinh',d:new Date().toISOString().slice(0,10),s:r.total,m:state.elapsed,L:LIMIT[S.mode],q:S.mode,k:state.code,p:[r.sc.mc,r.sc.tf,r.sc.sa],t};
   return 'TG7-'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 }
+function setSent(msg,retry){
+  const m=document.getElementById('sent');if(!m)return;
+  m.innerHTML=msg+(retry?' <button class="btn sm ghost" id="resend">Gửi lại</button>':'');
+}
+function sendResult(){
+  if(!SHEET_URL||!state.result)return;
+  const code=makeCode(state.result);
+  setSent('Đang gửi kết quả cho giáo viên...');
+  fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({code})})
+    .then(()=>{state.sentCode=code;setSent('Đã gửi kết quả cho giáo viên.');})
+    .catch(()=>setSent('Chưa gửi được (có thể mất mạng). Bấm Gửi lại, hoặc gửi mã bên dưới cho giáo viên.',true));
+}
 function reviewHTML(r){
   const sym=ok=>ok?'<span class="mark-ok">✓ Đúng</span>':'<span class="mark-no">✗ Chưa đúng</span>';
   return r.qres.map(x=>{
@@ -1130,7 +1143,8 @@ function resultHTML(){
   ${test?`<section style="margin-top:22px"><h2 style="margin-bottom:12px">Xem lại từng câu</h2>${reviewHTML(r)}</section>
 
   <section class="card codebox" style="margin-top:16px"><h2>Gửi kết quả cho giáo viên</h2>
-    <p class="muted small" style="margin:0">Sao chép mã dưới đây và gửi cho giáo viên (Zalo, lớp học trực tuyến). Mã chỉ chứa tên, điểm và kết quả theo nội dung.</p>
+    <p class="small" id="sent" role="status" style="margin:0"></p>
+    <p class="muted small" style="margin:0">${SHEET_URL?'Kết quả được gửi tự động. Nếu giáo viên chưa nhận được, hãy sao chép mã dưới đây và gửi qua Zalo.':'Sao chép mã dưới đây và gửi cho giáo viên (Zalo, lớp học trực tuyến).'} Mã chỉ chứa tên, điểm và kết quả theo nội dung.</p>
     <textarea id="code" readonly rows="3" aria-label="Mã kết quả">${code}</textarea>
     <div class="row"><button class="btn sm" id="copy">Sao chép mã</button><span class="small muted" id="copied" role="status"></span></div>
   </section>`:''}
@@ -1190,7 +1204,7 @@ function render(){
   if(gv){stopTimer();$app.innerHTML=teacherHTML();return;}
   if(state.view==='home'){stopTimer();$app.innerHTML=homeHTML();}
   else if(state.view==='quiz'){$app.innerHTML=quizHTML();updateProgress();startTimer();}
-  else{stopTimer();$app.innerHTML=resultHTML();}
+  else{stopTimer();$app.innerHTML=resultHTML();if(SHEET_URL&&S.mode!=='practice'&&state.sentCode!==makeCode(state.result))sendResult();else if(SHEET_URL&&S.mode!=='practice')setSent('Đã gửi kết quả cho giáo viên.');}
   window.scrollTo(0,0);
 }
 function normCode(s){return String(s||'').trim().toUpperCase().replace(/\s+/g,'');}
@@ -1240,6 +1254,7 @@ document.addEventListener('click',e=>{
     t.focus();t.select();
     (navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(()=>{m.textContent='Đã sao chép.';}).catch(()=>{m.textContent='Hãy nhấn giữ vùng chọn rồi chọn Sao chép.';});
   }
+  else if(id==='resend')sendResult();
   else if(id==='analyze')analyzeCodes();
   else if(id==='clearc'){document.getElementById('codes').value='';document.getElementById('tout').innerHTML='';}
 });
