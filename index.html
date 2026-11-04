@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tam giác bằng nhau</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a worksheet on graph paper. Blue ink for text, red pencil for the equal-marks, one column. */
+:root{
+  --paper:#f2f6fc; --card:#ffffff; --ink:#13203a; --muted:#54627f; --line:#cdd7e9;
+  --grid:rgba(52,96,170,.08); --accent:#1f4fd8; --accent-ink:#ffffff; --mark:#d9342b; --tri:#eaf0fc;
+  --good:#17754a; --good-bg:#e4f4ea; --warn:#9a5b00; --warn-bg:#fff0d4; --bad:#b3261e; --bad-bg:#fde8e6;
+  --display:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0d1730; --card:#142245; --ink:#e8eefc; --muted:#9fb0d4; --line:#2b3c6b;
+    --grid:rgba(140,170,255,.07); --accent:#8aa9ff; --accent-ink:#0d1730; --mark:#ff7f72; --tri:#1a2b57;
+    --good:#58d19a; --good-bg:#12372d; --warn:#f3b955; --warn-bg:#3b2d10; --bad:#ff8a80; --bad-bg:#40191b;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0d1730; --card:#142245; --ink:#e8eefc; --muted:#9fb0d4; --line:#2b3c6b;
+  --grid:rgba(140,170,255,.07); --accent:#8aa9ff; --accent-ink:#0d1730; --mark:#ff7f72; --tri:#1a2b57;
+  --good:#58d19a; --good-bg:#12372d; --warn:#f3b955; --warn-bg:#3b2d10; --bad:#ff8a80; --bad-bg:#40191b;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+  color:var(--ink); font:16px/1.65 var(--body); -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 72px}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0;font-size:.82rem;color:var(--muted);flex-wrap:wrap}
+.top b{color:var(--ink);font-weight:600;letter-spacing:.02em}
+.top nav{display:flex;gap:16px}
+.top nav a{color:var(--muted);text-decoration:none;border-bottom:1.5px solid transparent;padding-bottom:1px}
+.top nav a[aria-current="page"]{color:var(--ink);border-color:var(--mark)}
+
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.3rem,8vw,3.9rem);font-weight:700;letter-spacing:-.01em}
+h1 em{color:var(--accent);font-weight:600}
+h2{font-size:1.5rem;font-weight:700}
+h3{font-size:1.15rem;font-weight:700}
+.lead{font-size:1.08rem;color:var(--muted);max-width:56ch;margin:14px 0 0}
+
+.hero{padding:12px 0 8px}
+.hero .fig{margin-top:18px;max-width:420px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+
+.btn{appearance:none;border:0;background:var(--accent);color:var(--accent-ink);font-weight:600;padding:12px 22px;border-radius:10px;cursor:pointer;min-height:46px}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn.sm{padding:8px 14px;min-height:38px;font-size:.9rem}
+input[type=text],textarea{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{min-height:140px;resize:vertical;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem}
+label.fl{display:block;font-weight:600;font-size:.9rem;margin-bottom:6px}
+
+/* worksheet figures */
+.fig{display:block;width:100%;height:auto}
+.fig .tri,.fig .seg{fill:var(--tri);stroke:var(--ink);stroke-width:2;stroke-linejoin:round}
+.fig .seg{fill:none}
+.fig .thin{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:4 4}
+.fig .mk{stroke:var(--mark);stroke-width:2.2;stroke-linecap:round;fill:none}
+.fig .vl{fill:var(--ink);font:600 15px var(--display)}
+.fig .draw{stroke-dasharray:700;stroke-dashoffset:0;animation:draw 1.1s ease-out both}
+@keyframes draw{from{stroke-dashoffset:700}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.fig .draw{animation:none}}
+.figbox{background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:8px;max-width:400px;margin:10px 0}
+
+/* home */
+.grp{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mark);margin:18px 0 8px}
+.grp:first-of-type{margin-top:6px}
+.pack{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.pk{appearance:none;text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-height:68px}
+.pk:hover{border-color:var(--accent)}
+.pk b{font-family:var(--display);font-size:1.02rem}
+.pk span{font-size:.84rem;color:var(--muted);line-height:1.4}
+.pk[disabled]{opacity:.55;cursor:not-allowed}
+.pk[disabled]:hover{border-color:var(--line)}
+.recap{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:640px){.recap{grid-template-columns:1fr 1fr}}
+.recap .card{display:flex;flex-direction:column;gap:6px}
+.recap h3{font-size:1.02rem}
+.recap p{margin:0;font-size:.93rem}
+.chip{display:inline-block;font-size:.74rem;font-weight:600;padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted);background:var(--paper);white-space:nowrap}
+
+/* quiz */
+.bar-sticky{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:1px solid var(--line);margin:0 -16px 16px;padding:10px 16px}
+.timer{font-variant-numeric:tabular-nums;font-size:.95rem}
+.timer.low{color:var(--bad)}
+.prog{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:6px}
+.prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.part{margin:28px 0 12px}
+.part .kicker{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mark)}
+.part p{margin:4px 0 0;color:var(--muted);font-size:.92rem}
+.q{margin-bottom:14px}
+.qh{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin-bottom:6px}
+.qn{font-weight:700;font-family:var(--display);font-size:1.08rem}
+.stem{margin:0}
+.opts{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.opt{position:relative;display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;background:var(--card)}
+.opt:hover{border-color:var(--accent)}
+.opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.opt .ol{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-weight:600;font-size:.85rem}
+.opt:has(input:checked){border-color:var(--accent);background:var(--tri)}
+.opt:has(input:checked) .ol{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.opt:has(input:focus-visible){outline:3px solid var(--accent);outline-offset:2px}
+.opt:has(input:disabled){cursor:default}
+.opt:has(input:disabled):hover{border-color:var(--line)}
+.opt.is-right,.opt.is-right:hover{border-color:var(--good);background:var(--good-bg)}
+.opt.is-right .ol{background:var(--good);color:var(--paper);border-color:var(--good)}
+.opt.is-wrong,.opt.is-wrong:hover{border-color:var(--bad);background:var(--bad-bg)}
+.opt.is-wrong .ol{background:var(--bad);color:var(--paper);border-color:var(--bad)}
+.tf{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.tfr{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 0;border-top:1px dashed var(--line)}
+.tfr .tx{flex:1 1 260px}
+.tfr .tx b{font-family:var(--display);margin-right:6px}
+.tfr .exp{flex-basis:100%;margin-top:0}
+.tfb{display:flex;gap:8px}
+.tfb .opt{padding:7px 16px;border-radius:99px;font-weight:600;font-size:.92rem}
+.sa{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.sa input{max-width:180px}
+.warnbar{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:10px;padding:12px 14px;margin-top:16px}
+.feed{margin-top:12px;padding:10px 12px;border-radius:8px;font-size:.94rem}
+.feed.ok{background:var(--good-bg);color:var(--good)}
+.feed.bad{background:var(--bad-bg);color:var(--bad)}
+.feed.info{background:var(--warn-bg);color:var(--warn)}
+.exp{background:var(--paper);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:.94rem}
+
+/* results */
+.score{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.big{font-family:var(--display);font-weight:700;font-size:clamp(3rem,14vw,4.6rem);line-height:1;letter-spacing:-.02em}
+.big small{font-size:.4em;color:var(--muted);font-weight:600}
+.parts{display:flex;gap:8px;flex-wrap:wrap}
+.parts .chip{font-size:.85rem;padding:5px 12px}
+.topic{padding:14px 0;border-top:1px solid var(--line)}
+.topic:first-child{border-top:0;padding-top:0}
+.trow{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.track{height:12px;border-radius:99px;background:var(--line);margin:8px 0 6px;overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px}
+.st{font-size:.8rem;font-weight:700;padding:2px 10px;border-radius:99px;white-space:nowrap}
+.st.good{background:var(--good-bg);color:var(--good)}
+.st.warn{background:var(--warn-bg);color:var(--warn)}
+.st.bad{background:var(--bad-bg);color:var(--bad)}
+.fill-good{background:var(--good)} .fill-warn{background:var(--warn)} .fill-bad{background:var(--bad)}
+.advice{border-left:4px solid var(--mark);padding:2px 0 2px 14px;margin:10px 0}
+.advice p{margin:4px 0}
+ul.plain{margin:6px 0 0;padding-left:20px}
+ul.plain li{margin:3px 0}
+details.rv{border:1px solid var(--line);border-radius:10px;background:var(--card);margin-bottom:8px}
+details.rv summary{cursor:pointer;padding:11px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;list-style:none}
+details.rv summary::-webkit-details-marker{display:none}
+details.rv .body{padding:0 14px 14px;border-top:1px dashed var(--line)}
+.mark-ok{color:var(--good);font-weight:700} .mark-no{color:var(--bad);font-weight:700}
+.ans-line{margin:6px 0;font-size:.94rem}
+.codebox{display:flex;flex-direction:column;gap:8px}
+
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;font-variant-numeric:tabular-nums}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+td.cell{font-weight:600;text-align:center}
+td.cell.good{color:var(--good)} td.cell.warn{color:var(--warn)} td.cell.bad{color:var(--bad)}
+.tablewrap{overflow-x:auto}
+[hidden]{display:none!important}
+footer{margin-top:40px;color:var(--muted);font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <b>Toán 7 · Kết nối tri thức · Chương Tam giác bằng nhau</b>
+    <nav aria-label="Chọn chế độ">
+      <a href="#" id="nav-hs" aria-current="page">Học sinh</a>
+      <a href="#giao-vien" id="nav-gv">Giáo viên</a>
+    </nav>
+  </header>
+
+  <main id="app"></main>
+
+  <footer>Bài luyện chấm tự động ngay trên trình duyệt. Kết quả không được lưu trên máy chủ; học sinh gửi mã kết quả của bài kiểm tra cho giáo viên để tổng hợp.</footer>
+</div>
+
+<script>
+"use strict";
+/* ============ Hình vẽ ============ */
+const PT={A:[20,118],B:[150,118],C:[70,26]};
+const f1=n=>(Math.round(n*10)/10);
+function ticks(p,q,n){
+  const mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2,dx=q[0]-p[0],dy=q[1]-p[1],len=Math.hypot(dx,dy);
+  const ux=dx/len,uy=dy/len,nx=-uy,ny=ux;let s='';
+  for(let i=0;i<n;i++){const o=(i-(n-1)/2)*5,cx=mx+ux*o,cy=my+uy*o;
+    s+=`<line class="mk" x1="${f1(cx-nx*5)}" y1="${f1(cy-ny*5)}" x2="${f1(cx+nx*5)}" y2="${f1(cy+ny*5)}"/>`;}
+  return s;
+}
+function arcs(v,p,q,n){
+  const a1=Math.atan2(p[1]-v[1],p[0]-v[0]),a2=Math.atan2(q[1]-v[1],q[0]-v[0]);
+  let d=a2-a1;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+  const sw=d>0?1:0;let s='';
+  for(let i=0;i<n;i++){const r=16+i*5;
+    s+=`<path class="mk" d="M${f1(v[0]+r*Math.cos(a1))} ${f1(v[1]+r*Math.sin(a1))} A${r} ${r} 0 0 ${sw} ${f1(v[0]+r*Math.cos(a2))} ${f1(v[1]+r*Math.sin(a2))}"/>`;}
+  return s;
+}
+function drawTri(off,lab,o){
+  const P={A:[PT.A[0]+off,PT.A[1]],B:[PT.B[0]+off,PT.B[1]],C:[PT.C[0]+off,PT.C[1]]};
+  let s=`<polygon class="tri${o.anim?' draw':''}" points="${[P.A,P.B,P.C].map(p=>p.join(',')).join(' ')}"/>`;
+  const sd=o.sides||{},ag=o.ang||{};
+  [['AB','A','B'],['BC','B','C'],['CA','C','A']].forEach(([k,p,q])=>{if(sd[k])s+=ticks(P[p],P[q],sd[k]);});
+  [['A','B','C'],['B','C','A'],['C','A','B']].forEach(([v,p,q])=>{if(ag[v])s+=arcs(P[v],P[p],P[q],ag[v]);});
+  const L={A:[-12,15],B:[11,15],C:[0,-8]};
+  ['A','B','C'].forEach((v,i)=>{s+=`<text class="vl" x="${P[v][0]+L[v][0]}" y="${P[v][1]+L[v][1]}" text-anchor="middle">${lab[i]}</text>`;});
+  return s;
+}
+function figTwo(o){
+  o=o||{};const l1=o.l1||['A','B','C'],l2=o.l2||['D','E','F'];
+  return `<svg class="fig" viewBox="0 0 360 150" role="img" aria-label="${o.alt||'Hình hai tam giác có kí hiệu các yếu tố bằng nhau'}">${drawTri(0,l1,o)}${drawTri(190,l2,o)}</svg>`;
+}
+function figIso(o){
+  const A=[120,22],B=[35,118],C=[205,118],P=[120,118];
+  let s=`<polygon class="tri" points="${A} ${B} ${C}"/><line class="seg" x1="120" y1="22" x2="120" y2="118"/>`;
+  const t=o.ticks||{};
+  if(t.AB)s+=ticks(A,B,t.AB);if(t.AC)s+=ticks(A,C,t.AC);if(t.BP)s+=ticks(B,P,t.BP);if(t.PC)s+=ticks(P,C,t.PC);
+  if(o.arcA){s+=arcs(A,B,P,1)+arcs(A,P,C,1);}
+  if(o.right)s+=`<path class="mk" d="M114 118 L114 112 L120 112"/>`;
+  s+=`<text class="vl" x="120" y="14" text-anchor="middle">A</text><text class="vl" x="24" y="132" text-anchor="middle">B</text><text class="vl" x="216" y="132" text-anchor="middle">C</text><text class="vl" x="120" y="136" text-anchor="middle">${o.pt}</text>`;
+  return `<svg class="fig" viewBox="0 0 240 145" role="img" aria-label="${o.alt}">${s}</svg>`;
+}
+function figCross(v){
+  const A=[40,30],B=[200,120],C=[40,120],D=[200,30],O=[120,75];
+  let s=`<line class="seg" x1="40" y1="30" x2="200" y2="120"/><line class="seg" x1="40" y1="120" x2="200" y2="30"/>`;
+  s+=`<line class="thin" x1="40" y1="30" x2="40" y2="120"/><line class="thin" x1="200" y1="30" x2="200" y2="120"/>`;
+  if(v===2){s+=ticks(O,A,1)+ticks(O,B,1)+arcs(A,O,C,1)+arcs(B,O,D,1);}
+  else{s+=ticks(O,A,1)+ticks(O,B,1)+ticks(O,C,2)+ticks(O,D,2);}
+  const T=(x,y,t)=>`<text class="vl" x="${x}" y="${y}" text-anchor="middle">${t}</text>`;
+  s+=T(28,26,'A')+T(28,138,'C')+T(212,138,'B')+T(212,26,'D')+T(134,94,'O');
+  return `<svg class="fig" viewBox="0 0 240 150" role="img" aria-label="Hai đoạn thẳng AB và CD cắt nhau tại O">${s}</svg>`;
+}
+function figKite(){
+  const A=[120,18],B=[120,126],C=[50,72],D=[190,72];
+  let s=`<polygon class="tri" points="${A} ${C} ${B} ${D}"/><line class="seg" x1="120" y1="18" x2="120" y2="126"/>`;
+  s+=ticks(A,C,1)+ticks(A,D,1)+ticks(C,B,2)+ticks(D,B,2);
+  const T=(x,y,t)=>`<text class="vl" x="${x}" y="${y}" text-anchor="middle">${t}</text>`;
+  s+=T(120,12,'A')+T(120,142,'B')+T(38,76,'C')+T(202,76,'D');
+  return `<svg class="fig" viewBox="0 0 240 150" role="img" aria-label="Hai tam giác ABC và ABD có chung cạnh AB, C và D khác phía">${s}</svg>`;
+}
+const fb=svg=>`<div class="figbox">${svg}</div>`;
+
+/* ============ Chủ đề ============ */
+const TOPICS={
+  tu:{short:'Tương ứng',name:'Hai tam giác bằng nhau',rule:'Hai tam giác bằng nhau thì các cạnh tương ứng bằng nhau và các góc tương ứng bằng nhau.',tip:'Đọc đúng thứ tự đỉnh trong kí hiệu. Với ΔABC = ΔMNP thì A↔M, B↔N, C↔P; cạnh hay góc nào nối các đỉnh tương ứng thì bằng nhau.'},
+  ccc:{short:'c.c.c',name:'Trường hợp cạnh – cạnh – cạnh',rule:'Nếu ba cạnh của tam giác này bằng ba cạnh của tam giác kia thì hai tam giác đó bằng nhau.',tip:'Chỉ cần đủ ba cặp cạnh tương ứng bằng nhau, không cần xét góc. Mới có hai cặp cạnh thì chưa đủ.'},
+  cgc:{short:'c.g.c',name:'Trường hợp cạnh – góc – cạnh',rule:'Nếu hai cạnh và góc xen giữa của tam giác này bằng hai cạnh và góc xen giữa của tam giác kia thì hai tam giác đó bằng nhau.',tip:'Góc phải nằm xen giữa hai cạnh đã cho. Nếu góc không kẹp giữa hai cạnh thì chưa đủ để kết luận.'},
+  gcg:{short:'g.c.g',name:'Trường hợp góc – cạnh – góc',rule:'Nếu một cạnh và hai góc kề cạnh đó của tam giác này bằng một cạnh và hai góc kề cạnh đó của tam giác kia thì hai tam giác đó bằng nhau.',tip:'Cạnh phải kề với cả hai góc đã cho. Chỉ có hai cặp góc bằng nhau thì chưa đủ, vì các cạnh có thể dài ngắn khác nhau.'}
+};
+const TKEYS=['tu','ccc','cgc','gcg'];
+const LEVELS={NB:'Nhận biết',TH:'Thông hiểu',VD:'Vận dụng'};
+const LEVEL_DESC={NB:'Nhận ra trường hợp bằng nhau, đọc kí hiệu và hình vẽ.',TH:'Chọn điều kiện cần thêm, tính góc và cạnh tương ứng.',VD:'Chứng minh và tính toán qua nhiều bước.'};
+let RNG=Math.random,SEEDED=false;
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19;}h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return(h^h>>>16)>>>0;}
+const ri=(a,b)=>a+Math.floor(RNG()*(b-a+1));
+
+/* ============ Ngân hàng câu hỏi ============ */
+const CGC_FIG=fb(figCross());
+const CGC2_FIG=fb(figCross(2));
+const MC=[
+ /* --- Hai tam giác bằng nhau --- */
+ {id:'m1',topic:'tu',level:'NB',stem:'Cho ΔABC = ΔMNP. Khẳng định nào sau đây đúng?',ans:1,opts:[
+   {t:'AB = MP',err:'Ghép sai cặp đỉnh: A ứng với M, B ứng với N nên AB ứng với MN, không phải MP.'},
+   {t:'∠A = ∠M'},
+   {t:'BC = MN',err:'BC nối B và C, ứng với đoạn nối N và P, tức là NP.'},
+   {t:'∠B = ∠P',err:'∠B ứng với ∠N (B↔N), không phải ∠P.'}],
+  exp:'Kí hiệu ΔABC = ΔMNP cho biết các đỉnh tương ứng theo đúng thứ tự: A↔M, B↔N, C↔P. Vì vậy ∠A = ∠M, AB = MN, BC = NP, CA = PM.'},
+ {id:'m7',topic:'tu',level:'NB',stem:'Nếu ΔABC = ΔDEF thì khẳng định nào sau đây đúng?',ans:0,opts:[
+   {t:'BC = EF'},
+   {t:'BC = DE',err:'BC nối B và C, ứng với đoạn nối E và F, tức là EF.'},
+   {t:'AC = DE',err:'AC nối A và C, ứng với DF; còn DE ứng với AB.'},
+   {t:'AB = EF',err:'AB nối A và B, ứng với DE, không phải EF.'}],
+  exp:'A↔D, B↔E, C↔F nên AB = DE, BC = EF, CA = FD.'},
+ {id:'m2',topic:'tu',level:'TH',stem:'Cho ΔABC = ΔDEF với AB = 4 cm, BC = 6 cm, DF = 5 cm. Chu vi của ΔABC bằng:',ans:0,opts:[
+   {t:'15 cm'},
+   {t:'10 cm',err:'Mới cộng AB và BC, quên cạnh thứ ba AC (= DF = 5 cm).'},
+   {t:'9 cm',err:'Cộng AB với DF mà bỏ sót cạnh BC.'},
+   {t:'11 cm',err:'Cộng BC với DF mà bỏ sót cạnh AB.'}],
+  exp:'A↔D, C↔F nên AC = DF = 5 cm. Chu vi ΔABC = 4 + 6 + 5 = 15 cm.'},
+ {id:'m8',topic:'tu',level:'TH',stem:'Cho ΔABC = ΔDEF. Biết ∠A = 80° và ∠E = 60°. Số đo ∠C bằng:',ans:0,opts:[
+   {t:'40°'},
+   {t:'60°',err:'Nhầm ∠C với ∠B: ∠B ứng với ∠E nên ∠B = 60°, còn ∠C phải tính tiếp.'},
+   {t:'100°',err:'Mới lấy 180° − 80°, chưa trừ tiếp ∠B = 60°.'},
+   {t:'140°',err:'Cộng ∠A với ∠B thay vì lấy 180° trừ đi hai góc đó.'}],
+  exp:'B ứng với E nên ∠B = ∠E = 60°. Do đó ∠C = 180° − 80° − 60° = 40°.'},
+ {id:'m9',topic:'tu',level:'VD',stem:'Cho ΔABC = ΔMNP có AB = 5 cm, NP = 6 cm và chu vi ΔMNP bằng 18 cm. Độ dài cạnh AC bằng:',ans:0,opts:[
+   {t:'7 cm'},
+   {t:'13 cm',err:'Mới lấy 18 − 5, chưa trừ BC (= NP = 6 cm).'},
+   {t:'12 cm',err:'Mới lấy 18 − 6, chưa trừ AB = 5 cm.'},
+   {t:'6 cm',err:'Nhầm AC với BC: chỉ BC mới bằng NP = 6 cm.'}],
+  exp:'Chu vi ΔABC = chu vi ΔMNP = 18 cm. BC = NP = 6 cm. Vậy AC = 18 − 5 − 6 = 7 cm.'},
+ {id:'m10',topic:'tu',level:'VD',stem:'Cho ΔABC = ΔDEF. Biết AB = (3x − 1) cm và DE = (2x + 4) cm. Giá trị của x là:',ans:0,opts:[
+   {t:'x = 5'},
+   {t:'x = 3',err:'Chuyển vế sai dấu: −1 sang vế phải phải thành +1, được 4 + 1 = 5.'},
+   {t:'x = 4',err:'Mới chuyển 2x sang vế trái mà quên chuyển −1.'},
+   {t:'x = −5',err:'Nhầm dấu khi chuyển vế.'}],
+  exp:'AB và DE là hai cạnh tương ứng nên AB = DE: 3x − 1 = 2x + 4, suy ra 3x − 2x = 4 + 1, vậy x = 5.'},
+ /* --- c.c.c --- */
+ {id:'m3',topic:'ccc',level:'NB',stem:'Hai tam giác ABC và MNP có AB = MN, BC = NP, CA = PM. Theo trường hợp nào thì ΔABC = ΔMNP?',ans:0,opts:[
+   {t:'Cạnh – cạnh – cạnh (c.c.c)'},
+   {t:'Cạnh – góc – cạnh (c.g.c)',err:'Giả thiết chỉ cho ba cặp cạnh, không có cặp góc nào nên không phải c.g.c.'},
+   {t:'Góc – cạnh – góc (g.c.g)',err:'Giả thiết không có cặp góc nào bằng nhau nên không phải g.c.g.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'Ba cặp cạnh tương ứng bằng nhau đã đủ để kết luận theo c.c.c.'}],
+  exp:'Ba cạnh của ΔABC lần lượt bằng ba cạnh của ΔMNP nên ΔABC = ΔMNP theo trường hợp c.c.c.'},
+ {id:'m11',topic:'ccc',level:'NB',stem:'Điều kiện nào sau đây đủ để kết luận ΔABC = ΔMNP theo trường hợp c.c.c?',ans:0,opts:[
+   {t:'AB = MN, BC = NP, CA = PM'},
+   {t:'AB = MN, BC = NP',err:'Mới có hai cặp cạnh bằng nhau, thiếu cặp cạnh thứ ba.'},
+   {t:'AB = MN, ∠A = ∠M, ∠B = ∠N',err:'Đây là một cạnh và hai góc kề, thuộc trường hợp g.c.g chứ không phải c.c.c.'},
+   {t:'∠A = ∠M, ∠B = ∠N, ∠C = ∠P',err:'Ba cặp góc bằng nhau chưa đủ để kết luận, vì độ dài các cạnh có thể khác nhau.'}],
+  exp:'Trường hợp c.c.c yêu cầu ba cạnh của tam giác này bằng ba cạnh của tam giác kia: AB = MN, BC = NP, CA = PM.'},
+ {id:'m12',topic:'ccc',level:'TH',stem:'Cho ΔABC và ΔDEF có AB = DE và AC = DF. Cần thêm điều kiện nào để ΔABC = ΔDEF theo trường hợp c.c.c?',ans:0,opts:[
+   {t:'BC = EF'},
+   {t:'∠A = ∠D',err:'Với AB = DE, AC = DF, ∠A = ∠D thì được c.g.c, không phải c.c.c.'},
+   {t:'∠B = ∠E',err:'c.c.c chỉ dùng ba cặp cạnh; thêm một cặp góc không thay được cặp cạnh BC = EF.'},
+   {t:'∠C = ∠F',err:'c.c.c chỉ dùng ba cặp cạnh; thêm một cặp góc không thay được cặp cạnh BC = EF.'}],
+  exp:'c.c.c cần ba cặp cạnh bằng nhau. Đã có AB = DE và AC = DF nên cần thêm BC = EF.'},
+ {id:'m13',topic:'ccc',level:'TH',stem:'Quan sát hình (các cạnh có cùng số vạch thì bằng nhau). Phát biểu nào sau đây đúng?',
+  fig:fb(figTwo({sides:{AB:1,BC:2,CA:3}})),ans:0,opts:[
+   {t:'ΔABC = ΔDEF (c.c.c)'},
+   {t:'ΔABC = ΔEFD (c.c.c)',err:'Ghép sai thứ tự đỉnh: AB (một vạch) bằng DE (một vạch) nên A↔D, B↔E, C↔F.'},
+   {t:'ΔABC = ΔDEF (c.g.c)',err:'Hình chỉ cho ba cặp cạnh bằng nhau, không có cặp góc nào.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'Ba cặp cạnh bằng nhau đã đủ theo trường hợp c.c.c.'}],
+  exp:'AB = DE, BC = EF, CA = FD nên ΔABC = ΔDEF theo c.c.c, với các đỉnh tương ứng A↔D, B↔E, C↔F.'},
+ {id:'m14',topic:'ccc',level:'VD',stem:'Cho ΔABC và ΔDEF có AB = DE = 5 cm, BC = EF = 7 cm. Chu vi của mỗi tam giác đều bằng 18 cm. Khẳng định nào sau đây đúng?',ans:0,opts:[
+   {t:'ΔABC = ΔDEF theo trường hợp c.c.c'},
+   {t:'Không kết luận được vì không có cặp góc nào bằng nhau',err:'c.c.c không cần góc: AC = 18 − 5 − 7 = 6 cm và DF = 6 cm nên đã đủ ba cặp cạnh.'},
+   {t:'ΔABC = ΔDEF theo trường hợp c.g.c',err:'Giả thiết không cho góc nào bằng nhau nên không dùng được c.g.c.'},
+   {t:'ΔABC = ΔEFD theo trường hợp c.c.c',err:'Ghép sai thứ tự đỉnh: AB = DE nên A↔D, B↔E, C↔F.'}],
+  exp:'AC = 18 − 5 − 7 = 6 cm và DF = 18 − 5 − 7 = 6 cm nên AC = DF. Ba cặp cạnh AB = DE, BC = EF, AC = DF bằng nhau nên ΔABC = ΔDEF (c.c.c).'},
+ {id:'m15',topic:'ccc',level:'VD',stem:'Cho ΔABC và ΔABD (C, D nằm khác phía đối với AB) có AC = AD và BC = BD (như hình). Khẳng định nào sau đây đúng?',
+  fig:fb(figKite()),ans:0,opts:[
+   {t:'ΔABC = ΔABD theo trường hợp c.c.c'},
+   {t:'ΔABC = ΔBAD theo trường hợp c.c.c',err:'Ghép sai thứ tự đỉnh: AC = AD nên C↔D, còn A↔A và B↔B, tức là ΔABC = ΔABD.'},
+   {t:'ΔABC = ΔABD theo trường hợp c.g.c',err:'Giả thiết không cho góc nào bằng nhau nên không dùng được c.g.c.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'AB là cạnh chung nên đã có đủ ba cặp cạnh bằng nhau.'}],
+  exp:'ΔABC và ΔABD có AC = AD, BC = BD và AB là cạnh chung nên ΔABC = ΔABD (c.c.c).'},
+ /* --- c.g.c --- */
+ {id:'m16',topic:'cgc',level:'NB',stem:'Hai tam giác ABC và DEF có AB = DE, ∠B = ∠E, BC = EF. Theo trường hợp nào thì ΔABC = ΔDEF?',ans:0,opts:[
+   {t:'Cạnh – góc – cạnh (c.g.c)'},
+   {t:'Cạnh – cạnh – cạnh (c.c.c)',err:'Giả thiết chỉ có hai cặp cạnh và một cặp góc, chưa đủ ba cặp cạnh.'},
+   {t:'Góc – cạnh – góc (g.c.g)',err:'Giả thiết chỉ có một cặp góc nên không phải g.c.g.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'Góc B xen giữa AB và BC, đủ để kết luận theo c.g.c.'}],
+  exp:'Góc B xen giữa hai cạnh AB và BC, góc E xen giữa hai cạnh DE và EF. Hai cạnh và góc xen giữa bằng nhau nên ΔABC = ΔDEF (c.g.c).'},
+ {id:'m17',topic:'cgc',level:'NB',stem:'Quan sát hình (các kí hiệu giống nhau chỉ các yếu tố bằng nhau). Hai tam giác ABC và DEF bằng nhau theo trường hợp nào?',
+  fig:fb(figTwo({sides:{AB:1,CA:2},ang:{A:1}})),ans:0,opts:[
+   {t:'Cạnh – góc – cạnh (c.g.c)'},
+   {t:'Cạnh – cạnh – cạnh (c.c.c)',err:'Hình chỉ cho hai cặp cạnh bằng nhau và một cặp góc.'},
+   {t:'Góc – cạnh – góc (g.c.g)',err:'Hình chỉ có một cặp góc bằng nhau nên không phải g.c.g.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'Góc A nằm xen giữa AB và AC, đủ để kết luận theo c.g.c.'}],
+  exp:'AB = DE, ∠A = ∠D, AC = DF. Góc A xen giữa AB và AC nên ΔABC = ΔDEF (c.g.c).'},
+ {id:'m4',topic:'cgc',level:'TH',stem:'Cho ΔABC và ΔDEF có AB = DE và ∠B = ∠E. Cần thêm điều kiện nào để ΔABC = ΔDEF theo trường hợp c.g.c?',ans:0,opts:[
+   {t:'BC = EF'},
+   {t:'AC = DF',err:'Góc B không nằm xen giữa hai cạnh AB và AC, nên bộ này chưa phải c.g.c.'},
+   {t:'∠A = ∠D',err:'Có AB = DE, ∠A = ∠D, ∠B = ∠E là trường hợp g.c.g (một cạnh và hai góc kề), không phải c.g.c.'},
+   {t:'∠C = ∠F',err:'Thêm một cặp góc không tạo ra cặp cạnh kẹp góc B, E nên không thành c.g.c.'}],
+  exp:'Góc B xen giữa hai cạnh AB và BC; góc E xen giữa hai cạnh DE và EF. Đã có AB = DE và ∠B = ∠E nên cần thêm BC = EF.'},
+ {id:'m18',topic:'cgc',level:'TH',stem:'Cho ΔABC và ΔDEF có BC = EF và ∠C = ∠F. Cần thêm điều kiện nào để ΔABC = ΔDEF theo trường hợp c.g.c?',ans:0,opts:[
+   {t:'CA = FD'},
+   {t:'AB = DE',err:'Cạnh AB đối diện với góc C, không kẹp góc C, nên không tạo thành c.g.c.'},
+   {t:'∠B = ∠E',err:'Có BC = EF, ∠B = ∠E, ∠C = ∠F là trường hợp g.c.g, không phải c.g.c.'},
+   {t:'∠A = ∠D',err:'Thêm một cặp góc không tạo ra cặp cạnh kẹp góc C, F nên không thành c.g.c.'}],
+  exp:'Góc C xen giữa hai cạnh BC và CA; góc F xen giữa hai cạnh EF và FD. Đã có BC = EF và ∠C = ∠F nên cần thêm CA = FD.'},
+ {id:'m19',topic:'cgc',level:'VD',stem:'Cho ΔABC và ΔDEF có AB = DE, BC = EF và ∠A = ∠D. Kết luận nào sau đây đúng?',ans:0,opts:[
+   {t:'Chưa đủ để kết luận hai tam giác bằng nhau, vì ∠A không xen giữa AB và BC'},
+   {t:'ΔABC = ΔDEF theo trường hợp c.g.c',err:'Góc phải xen giữa hai cạnh bằng nhau; góc xen giữa AB và BC là ∠B chứ không phải ∠A.'},
+   {t:'ΔABC = ΔDEF theo trường hợp c.c.c',err:'Mới có hai cặp cạnh bằng nhau, chưa có cặp cạnh thứ ba.'},
+   {t:'ΔABC = ΔDEF theo trường hợp g.c.g',err:'Giả thiết chỉ có một cặp góc bằng nhau nên không phải g.c.g.'}],
+  exp:'Góc xen giữa AB và BC là ∠B. Giả thiết cho ∠A = ∠D, góc này không xen giữa hai cạnh đã cho nên không dùng được c.g.c. Hai cạnh và một góc không xen giữa chưa đủ để kết luận.'},
+ {id:'m20',topic:'cgc',level:'VD',stem:'Hai đoạn thẳng AB và CD cắt nhau tại O, O là trung điểm của mỗi đoạn thẳng (như hình). Hai tam giác OAC và OBD bằng nhau theo trường hợp nào?',
+  fig:CGC_FIG,ans:0,opts:[
+   {t:'Cạnh – góc – cạnh (c.g.c)'},
+   {t:'Cạnh – cạnh – cạnh (c.c.c)',err:'Giả thiết chưa cho AC = BD nên chưa dùng được c.c.c.'},
+   {t:'Góc – cạnh – góc (g.c.g)',err:'Giả thiết không cho hai cặp góc kề một cạnh bằng nhau.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'Có OA = OB, OC = OD và ∠AOC = ∠BOD (đối đỉnh), đủ cho c.g.c.'}],
+  exp:'OA = OB và OC = OD (O là trung điểm), ∠AOC = ∠BOD (hai góc đối đỉnh). Góc AOC xen giữa OA và OC, góc BOD xen giữa OB và OD nên ΔOAC = ΔOBD (c.g.c).'},
+ /* --- g.c.g --- */
+ {id:'m21',topic:'gcg',level:'NB',stem:'Hai tam giác ABC và DEF có ∠B = ∠E, BC = EF, ∠C = ∠F. Theo trường hợp nào thì ΔABC = ΔDEF?',ans:0,opts:[
+   {t:'Góc – cạnh – góc (g.c.g)'},
+   {t:'Cạnh – góc – cạnh (c.g.c)',err:'Giả thiết chỉ có một cặp cạnh và hai cặp góc, không có hai cặp cạnh.'},
+   {t:'Cạnh – cạnh – cạnh (c.c.c)',err:'Giả thiết chỉ có một cặp cạnh bằng nhau.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'BC kề với hai góc B và C, đủ để kết luận theo g.c.g.'}],
+  exp:'BC = EF, ∠B = ∠E, ∠C = ∠F. Cạnh BC kề với hai góc B và C nên ΔABC = ΔDEF (g.c.g).'},
+ {id:'m6',topic:'gcg',level:'NB',stem:'Quan sát hình (các kí hiệu giống nhau chỉ các yếu tố bằng nhau). Hai tam giác ABC và DEF bằng nhau theo trường hợp nào?',
+  fig:fb(figTwo({sides:{AB:1},ang:{A:1,B:2}})),ans:0,opts:[
+   {t:'Góc – cạnh – góc (g.c.g)'},
+   {t:'Cạnh – góc – cạnh (c.g.c)',err:'Hình có hai cặp góc bằng nhau và chỉ một cặp cạnh, chưa phải c.g.c.'},
+   {t:'Cạnh – cạnh – cạnh (c.c.c)',err:'Hình chỉ cho một cặp cạnh bằng nhau.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'AB nằm giữa hai góc A và B, đã đủ cho g.c.g.'}],
+  exp:'Ta có AB = DE, ∠A = ∠D, ∠B = ∠E. AB là cạnh kề với hai góc A và B nên ΔABC = ΔDEF theo trường hợp g.c.g.'},
+ {id:'m5',topic:'gcg',level:'TH',stem:'Cho ΔABC và ΔMNP có ∠B = ∠N và BC = NP. Để ΔABC = ΔMNP theo trường hợp g.c.g, cần thêm điều kiện nào?',ans:0,opts:[
+   {t:'∠C = ∠P'},
+   {t:'AB = MN',err:'Thêm AB = MN thì có hai cạnh và góc xen giữa (c.g.c), không phải g.c.g.'},
+   {t:'AC = MP',err:'Cạnh AC không kề với góc B, nên không tạo thành bộ g.c.g.'},
+   {t:'Không cần thêm điều kiện nào',err:'Mới có một góc và một cạnh; g.c.g cần cạnh đó và cả hai góc kề nó.'}],
+  exp:'Trường hợp g.c.g cần một cạnh và hai góc kề cạnh ấy. Cạnh BC kề hai góc B và C; cạnh NP kề hai góc N và P. Đã có ∠B = ∠N, BC = NP nên cần thêm ∠C = ∠P.'},
+ {id:'m22',topic:'gcg',level:'TH',stem:'Cho ΔABC và ΔDEF có ∠A = ∠D và AB = DE. Cần thêm điều kiện nào để ΔABC = ΔDEF theo trường hợp g.c.g?',ans:0,opts:[
+   {t:'∠B = ∠E'},
+   {t:'AC = DF',err:'Thêm AC = DF thì có hai cạnh và góc xen giữa (c.g.c), không phải g.c.g.'},
+   {t:'BC = EF',err:'Góc A không xen giữa AB và BC, và đây cũng không phải bộ một cạnh với hai góc kề.'},
+   {t:'Không cần thêm điều kiện nào',err:'Mới có một góc và một cạnh; g.c.g cần thêm góc thứ hai kề cạnh đó.'}],
+  exp:'Cạnh AB kề hai góc A và B; cạnh DE kề hai góc D và E. Đã có ∠A = ∠D và AB = DE nên cần thêm ∠B = ∠E.'},
+ {id:'m23',topic:'gcg',level:'VD',stem:'Cho ΔABC, AD là tia phân giác của ∠A (D thuộc BC) và AD ⊥ BC (như hình). Hai tam giác ABD và ACD bằng nhau theo trường hợp nào?',
+  fig:fb(figIso({pt:'D',arcA:true,right:true,ticks:{},alt:'Tam giác ABC, AD là phân giác góc A và vuông góc với BC'})),ans:0,opts:[
+   {t:'Góc – cạnh – góc (g.c.g)'},
+   {t:'Cạnh – góc – cạnh (c.g.c)',err:'Ngoài cạnh chung AD, giả thiết không cho thêm cặp cạnh nào bằng nhau.'},
+   {t:'Cạnh – cạnh – cạnh (c.c.c)',err:'Giả thiết không cho các cặp cạnh còn lại bằng nhau.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'Có ∠BAD = ∠CAD, AD chung, ∠ADB = ∠ADC = 90°, đủ cho g.c.g.'}],
+  exp:'∠BAD = ∠CAD (AD là phân giác), AD chung, ∠ADB = ∠ADC = 90°. AD kề hai góc ∠BAD, ∠ADB và kề hai góc ∠CAD, ∠ADC nên ΔABD = ΔACD (g.c.g).'},
+ {id:'m24',topic:'gcg',level:'VD',stem:'Hai đoạn thẳng AB và CD cắt nhau tại O, O là trung điểm của AB và ∠OAC = ∠OBD (như hình). Hai tam giác OAC và OBD bằng nhau theo trường hợp nào?',
+  fig:CGC2_FIG,ans:0,opts:[
+   {t:'Góc – cạnh – góc (g.c.g)'},
+   {t:'Cạnh – góc – cạnh (c.g.c)',err:'Giả thiết chưa cho OC = OD hay AC = BD nên chưa dùng được c.g.c.'},
+   {t:'Cạnh – cạnh – cạnh (c.c.c)',err:'Giả thiết chỉ cho một cặp cạnh bằng nhau (OA = OB).'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'Có ∠OAC = ∠OBD, OA = OB, ∠AOC = ∠BOD (đối đỉnh), đủ cho g.c.g.'}],
+  exp:'∠OAC = ∠OBD, OA = OB (O là trung điểm AB), ∠AOC = ∠BOD (đối đỉnh). OA kề hai góc ∠OAC và ∠AOC; OB kề hai góc ∠OBD và ∠BOD nên ΔOAC = ΔOBD (g.c.g).'}
+].map(q=>Object.assign({type:'mc'},q));
+
+const TF=[
+ {id:'t4',topic:'tu',level:'NB',stem:'Cho ΔABC = ΔMNP.',items:[
+   {t:'AB = MN.',v:true,topic:'tu',level:'NB',exp:'A↔M, B↔N nên AB ứng với MN.'},
+   {t:'BC = MP.',v:false,topic:'tu',level:'NB',exp:'B↔N, C↔P nên BC ứng với NP, không phải MP.'},
+   {t:'∠C = ∠P.',v:true,topic:'tu',level:'NB',exp:'C↔P nên hai góc tương ứng ∠C và ∠P bằng nhau.'},
+   {t:'Chu vi ΔABC bằng chu vi ΔMNP.',v:true,topic:'tu',level:'TH',exp:'Các cạnh tương ứng bằng nhau nên tổng độ dài ba cạnh của hai tam giác bằng nhau.'}]},
+ {id:'t5',topic:'tu',level:'TH',stem:'Cho ΔABC = ΔDEF, ∠A = 70°, ∠B = 50°, AB = 5 cm, BC = 6 cm.',items:[
+   {t:'∠F = 60°.',v:true,topic:'tu',level:'TH',exp:'∠C = 180° − 70° − 50° = 60°, mà F ứng với C nên ∠F = 60°.'},
+   {t:'∠D = 50°.',v:false,topic:'tu',level:'TH',exp:'D ứng với A nên ∠D = ∠A = 70°. Góc 50° là ∠B = ∠E.'},
+   {t:'DE = 6 cm.',v:false,topic:'tu',level:'NB',exp:'DE ứng với AB nên DE = 5 cm. Cạnh EF mới bằng BC = 6 cm.'},
+   {t:'Nếu AC = 4 cm thì chu vi ΔDEF bằng 15 cm.',v:true,topic:'tu',level:'VD',exp:'Chu vi ΔDEF = chu vi ΔABC = 5 + 6 + 4 = 15 cm.'}]},
+ {id:'t1',topic:'ccc',level:'TH',stem:'Cho ΔABC và ΔDEF có AB = DE = 3 cm, BC = EF = 4 cm, CA = FD = 5 cm (như hình).',
+  fig:fb(figTwo({sides:{AB:1,BC:2,CA:3}})),items:[
+   {t:'ΔABC = ΔDEF theo trường hợp c.c.c.',v:true,topic:'ccc',level:'NB',exp:'Ba cạnh của ΔABC lần lượt bằng ba cạnh của ΔDEF.'},
+   {t:'∠A = ∠D.',v:true,topic:'ccc',level:'TH',exp:'Hai tam giác bằng nhau. Đỉnh A là giao của AB và AC, đỉnh D là giao của DE và DF, nên A↔D và ∠A = ∠D.'},
+   {t:'∠B = ∠F.',v:false,topic:'tu',level:'TH',exp:'Đỉnh B ứng với đỉnh E, nên ∠B = ∠E. Đỉnh F ứng với đỉnh C.'},
+   {t:'Chỉ cần biết AB = DE và BC = EF thì đã kết luận được ΔABC = ΔDEF.',v:false,topic:'ccc',level:'VD',exp:'Mới có hai cặp cạnh thì chưa đủ. Cần thêm cạnh thứ ba (c.c.c) hoặc góc xen giữa (c.g.c).'}]},
+ {id:'t6',topic:'ccc',level:'VD',stem:'Cho ΔABC có AB = AC. Gọi M là trung điểm của BC rồi nối A với M (như hình).',
+  fig:fb(figIso({pt:'M',ticks:{AB:1,AC:1,BP:2,PC:2},alt:'Tam giác ABC có AB bằng AC, M là trung điểm BC'})),items:[
+   {t:'ΔABM = ΔACM theo trường hợp c.c.c.',v:true,topic:'ccc',level:'NB',exp:'AB = AC, MB = MC (M là trung điểm của BC) và AM là cạnh chung.'},
+   {t:'∠BAM = ∠CAM.',v:true,topic:'ccc',level:'TH',exp:'Hai tam giác bằng nhau nên hai góc tương ứng ∠BAM và ∠CAM bằng nhau.'},
+   {t:'∠AMB = 90°.',v:true,topic:'ccc',level:'VD',exp:'∠AMB = ∠AMC (góc tương ứng) và hai góc này kề bù nên mỗi góc bằng 180° : 2 = 90°.'},
+   {t:'Nếu BM = 3 cm thì BC = 3 cm.',v:false,topic:'ccc',level:'VD',exp:'M là trung điểm của BC nên BC = 2 · BM = 6 cm.'}]},
+ {id:'t2',topic:'cgc',level:'TH',stem:'Cho ΔABC và ΔMNP có AB = MN, ∠B = ∠N, BC = NP (như hình; A, B, C ứng với M, N, P).',
+  fig:fb(figTwo({sides:{AB:1,BC:2},ang:{B:1},l2:['M','N','P']})),items:[
+   {t:'ΔABC = ΔMNP theo trường hợp c.g.c.',v:true,topic:'cgc',level:'NB',exp:'∠B xen giữa AB và BC, ∠N xen giữa MN và NP; hai cạnh và góc xen giữa bằng nhau nên c.g.c.'},
+   {t:'AC = MP.',v:true,topic:'cgc',level:'TH',exp:'Hai tam giác bằng nhau nên hai cạnh tương ứng AC và MP bằng nhau.'},
+   {t:'∠A = ∠P.',v:false,topic:'cgc',level:'TH',exp:'A ứng với M nên ∠A = ∠M. Góc ∠P ứng với ∠C.'},
+   {t:'Nếu thay giả thiết ∠B = ∠N bằng ∠A = ∠M thì vẫn kết luận được ΔABC = ΔMNP theo c.g.c.',v:false,topic:'cgc',level:'VD',exp:'Khi đó ∠A không nằm xen giữa hai cạnh AB và BC, nên bộ này không phải c.g.c và chưa đủ để kết luận.'}]},
+ {id:'t7',topic:'cgc',level:'VD',stem:'Hai đoạn thẳng AB và CD cắt nhau tại O, O là trung điểm của mỗi đoạn thẳng (như hình).',
+  fig:CGC_FIG,items:[
+   {t:'ΔOAC = ΔOBD theo trường hợp c.g.c.',v:true,topic:'cgc',level:'NB',exp:'OA = OB, OC = OD (O là trung điểm) và ∠AOC = ∠BOD (đối đỉnh).'},
+   {t:'AC = BD.',v:true,topic:'cgc',level:'TH',exp:'Hai tam giác OAC và OBD bằng nhau nên hai cạnh tương ứng AC và BD bằng nhau.'},
+   {t:'∠OAC = ∠ODB.',v:false,topic:'cgc',level:'TH',exp:'A ứng với B nên ∠OAC = ∠OBD. Góc ∠ODB ứng với ∠OCA.'},
+   {t:'ΔOAC = ΔOBD theo trường hợp c.c.c.',v:false,topic:'cgc',level:'VD',exp:'Giả thiết chưa cho AC = BD, nên chưa dùng được c.c.c. Ở đây ta dùng c.g.c với góc xen giữa là hai góc đối đỉnh.'}]},
+ {id:'t3',topic:'gcg',level:'TH',stem:'Cho ΔABC và ΔDEF có ∠A = ∠D, AC = DF, ∠C = ∠F (như hình).',
+  fig:fb(figTwo({sides:{CA:1},ang:{A:1,C:2}})),items:[
+   {t:'ΔABC = ΔDEF theo trường hợp g.c.g.',v:true,topic:'gcg',level:'NB',exp:'AC là cạnh kề hai góc A và C; DF là cạnh kề hai góc D và F. Cạnh và hai góc kề bằng nhau nên g.c.g.'},
+   {t:'AB = DE.',v:true,topic:'gcg',level:'TH',exp:'Hai tam giác bằng nhau, A↔D và B↔E nên AB = DE.'},
+   {t:'∠B = ∠D.',v:false,topic:'tu',level:'TH',exp:'B ứng với E nên ∠B = ∠E, không phải ∠D.'},
+   {t:'Nếu bỏ giả thiết AC = DF thì vẫn kết luận được ΔABC = ΔDEF.',v:false,topic:'gcg',level:'VD',exp:'Chỉ có hai cặp góc bằng nhau thì độ dài các cạnh vẫn có thể khác nhau, nên chưa kết luận hai tam giác bằng nhau.'}]},
+ {id:'t8',topic:'gcg',level:'VD',stem:'Hai đoạn thẳng AB và CD cắt nhau tại O. O là trung điểm của AB và ∠OAC = ∠OBD (như hình).',
+  fig:CGC2_FIG,items:[
+   {t:'ΔOAC = ΔOBD theo trường hợp g.c.g.',v:true,topic:'gcg',level:'NB',exp:'∠OAC = ∠OBD, OA = OB và ∠AOC = ∠BOD (đối đỉnh); OA kề hai góc ∠OAC và ∠AOC.'},
+   {t:'OC = OA.',v:false,topic:'gcg',level:'TH',exp:'Từ hai tam giác bằng nhau chỉ suy ra OC = OD (cạnh tương ứng), không có cơ sở để OC = OA.'},
+   {t:'O là trung điểm của đoạn thẳng CD.',v:true,topic:'gcg',level:'VD',exp:'OC = OD và O nằm giữa C, D (hai đoạn cắt nhau tại O) nên O là trung điểm của CD.'},
+   {t:'∠AOC = ∠BOD vì hai góc này so le trong.',v:false,topic:'gcg',level:'TH',exp:'Hai góc ∠AOC và ∠BOD bằng nhau vì chúng là hai góc đối đỉnh, không phải so le trong.'}]}
+].map(q=>Object.assign({type:'tf'},q));
+
+/* ============ Bộ sinh đề tự đổi ============ */
+const LBL=[['A','B','C','D','E','F'],['A','B','C','M','N','P'],['M','N','P','X','Y','Z'],['D','E','F','M','N','P'],['H','K','L','X','Y','Z'],['P','Q','R','X','Y','Z']];
+function ctx(){const l=LBL[ri(0,LBL.length-1)];return {v:l.slice(0,3),w:l.slice(3),t1:'Δ'+l.slice(0,3).join(''),t2:'Δ'+l.slice(3).join('')};}
+function sideP(c,i,j){return ri(0,9)<3?`${c.v[j]}${c.v[i]} = ${c.w[j]}${c.w[i]}`:`${c.v[i]}${c.v[j]} = ${c.w[i]}${c.w[j]}`;}
+function angP(c,i){return `∠${c.v[i]} = ∠${c.w[i]}`;}
+function joinConds(a){a=shuffle(a);return a.length>1?a.slice(0,-1).join(', ')+' và '+a[a.length-1]:a[0];}
+const CASE_OPT={ccc:'Cạnh – cạnh – cạnh (c.c.c)',cgc:'Cạnh – góc – cạnh (c.g.c)',gcg:'Góc – cạnh – góc (g.c.g)',none:'Chưa đủ điều kiện để kết luận'};
+const CASE_SHORT={ccc:'c.c.c',cgc:'c.g.c',gcg:'g.c.g'};
+
+/* Tình huống: các điều kiện bằng nhau của hai tam giác và kết luận đúng */
+function scen(kind,c){
+  const j=ri(0,2),i=(j+1)%3,k=(j+2)%3,v=c.v,t=`${c.t1} = ${c.t2}`;
+  const SD=(a,b)=>sideP(c,a,b),AN=a=>angP(c,a);
+  switch(kind){
+    case 'ccc':return {kind:'ccc',conds:[SD(0,1),SD(1,2),SD(2,0)],exp:`Có đủ ba cặp cạnh tương ứng bằng nhau nên ${t} theo trường hợp c.c.c.`};
+    case 'cgc':return {kind:'cgc',conds:[SD(i,j),AN(j),SD(j,k)],exp:`Góc ${v[j]} xen giữa hai cạnh ${v[i]}${v[j]} và ${v[j]}${v[k]}. Hai cạnh và góc xen giữa bằng nhau nên ${t} (c.g.c).`};
+    case 'gcg':return {kind:'gcg',conds:[AN(i),SD(i,j),AN(j)],exp:`Cạnh ${v[i]}${v[j]} kề với hai góc ${v[i]} và ${v[j]}. Một cạnh và hai góc kề bằng nhau nên ${t} (g.c.g).`};
+    case 'ssa':return {kind:'none',trap:'ssa',conds:[SD(i,j),SD(j,k),AN(i)],exp:`Hai cạnh bằng nhau là ${v[i]}${v[j]} và ${v[j]}${v[k]}, góc xen giữa chúng là ∠${v[j]} chứ không phải ∠${v[i]}. Hai cạnh và một góc không xen giữa chưa đủ để kết luận.`};
+    case 'ss':return {kind:'none',trap:'ss',conds:[SD(i,j),SD(j,k)],exp:'Mới có hai cặp cạnh bằng nhau; cần thêm cạnh thứ ba (c.c.c) hoặc góc xen giữa (c.g.c).'};
+    case 'aaa':return {kind:'none',trap:'aaa',conds:[AN(0),AN(1),AN(2)],exp:'Ba cặp góc bằng nhau chưa đủ: hai tam giác có thể có độ dài các cạnh khác nhau. Cần thêm một cặp cạnh bằng nhau.'};
+    default:return {kind:'none',trap:'sa',conds:[SD(i,j),AN(i)],exp:'Mới có một cặp cạnh và một cặp góc, chưa đủ để dùng c.g.c hay g.c.g.'};
+  }
+}
+function caseErr(s,chosen){
+  if(s.kind!=='none'){
+    const E={
+      ccc:{cgc:'Giả thiết chỉ cho ba cặp cạnh, không có cặp góc nào nên không phải c.g.c.',gcg:'Giả thiết không có cặp góc nào bằng nhau nên không phải g.c.g.',none:'Ba cặp cạnh tương ứng bằng nhau đã đủ để kết luận theo c.c.c.'},
+      cgc:{ccc:'Giả thiết chỉ có hai cặp cạnh và một cặp góc, chưa đủ ba cặp cạnh.',gcg:'Giả thiết chỉ có một cặp góc bằng nhau nên không phải g.c.g.',none:'Góc xen giữa hai cặp cạnh bằng nhau, đủ để kết luận theo c.g.c.'},
+      gcg:{ccc:'Giả thiết chỉ có một cặp cạnh bằng nhau.',cgc:'Giả thiết chỉ có một cặp cạnh và hai cặp góc, không có hai cặp cạnh.',none:'Cạnh kề với hai góc đã cho, đủ để kết luận theo g.c.g.'}};
+    return E[s.kind][chosen];
+  }
+  const T={
+    ssa:{ccc:'Mới có hai cặp cạnh bằng nhau, chưa có cặp cạnh thứ ba.',cgc:'Góc bằng nhau không nằm xen giữa hai cạnh bằng nhau, nên chưa dùng được c.g.c.',gcg:'Giả thiết chỉ có một cặp góc bằng nhau nên không phải g.c.g.'},
+    ss:{ccc:'Mới có hai cặp cạnh bằng nhau, chưa có cặp cạnh thứ ba.',cgc:'Giả thiết không có cặp góc nào bằng nhau.',gcg:'Giả thiết không có cặp góc nào bằng nhau.'},
+    aaa:{ccc:'Giả thiết không có cặp cạnh nào bằng nhau.',cgc:'Giả thiết không có cặp cạnh nào bằng nhau.',gcg:'Ba cặp góc bằng nhau nhưng không có cặp cạnh nào, nên chưa đủ g.c.g (cần thêm một cặp cạnh).'},
+    sa:{ccc:'Mới có một cặp cạnh bằng nhau.',cgc:'Mới có một cặp cạnh và một cặp góc, thiếu thêm một cặp cạnh.',gcg:'Mới có một cặp cạnh và một cặp góc, thiếu thêm một cặp góc kề cạnh đó.'}};
+  return T[s.trap][chosen];
+}
+function genCase(kinds){return ()=>{
+  const c=ctx(),s=scen(kinds[ri(0,kinds.length-1)],c),order=['ccc','cgc','gcg','none'];
+  return {
+    stem:`Cho ${c.t1} và ${c.t2} có ${joinConds(s.conds)}. ${s.kind==='none'?'Kết luận nào sau đây đúng?':`Theo trường hợp nào thì ${c.t1} = ${c.t2}?`}`,
+    opts:order.map(k=>k===s.kind?{t:CASE_OPT[k]}:{t:CASE_OPT[k],err:caseErr(s,k)}),
+    ans:order.indexOf(s.kind),exp:s.exp};
+};}
+function genNeed(kind){return ()=>{
+  const c=ctx(),j=ri(0,2),i=(j+1)%3,k=(j+2)%3,v=c.v;
+  const SD=(a,b)=>`${v[a]}${v[b]} = ${c.w[a]}${c.w[b]}`,AN=a=>`∠${v[a]} = ∠${c.w[a]}`;
+  let given,good,bad,exp;
+  if(kind==='ccc'){
+    given=[SD(i,j),SD(j,k)];good=SD(k,i);
+    bad=[{t:AN(j),err:'Hai cạnh và góc xen giữa bằng nhau là trường hợp c.g.c, không phải c.c.c.'},
+         {t:AN(i),err:'c.c.c chỉ dùng ba cặp cạnh; một cặp góc không thay được cặp cạnh thứ ba.'},
+         {t:AN(k),err:'c.c.c chỉ dùng ba cặp cạnh; một cặp góc không thay được cặp cạnh thứ ba.'}];
+    exp=`c.c.c cần ba cặp cạnh bằng nhau. Đã có ${given.join(' và ')} nên cần thêm ${good}.`;
+  }else if(kind==='cgc'){
+    given=[SD(i,j),AN(j)];good=SD(j,k);
+    bad=[{t:SD(k,i),err:`Cạnh ${v[k]}${v[i]} đối diện với góc ${v[j]}, không kẹp góc ${v[j]}, nên chưa thành c.g.c.`},
+         {t:AN(i),err:'Một cạnh và hai góc kề cạnh đó là trường hợp g.c.g, không phải c.g.c.'},
+         {t:AN(k),err:`Thêm một cặp góc không tạo ra cặp cạnh kẹp góc ${v[j]}, nên không thành c.g.c.`}];
+    exp=`Góc ${v[j]} xen giữa hai cạnh ${v[i]}${v[j]} và ${v[j]}${v[k]}. Đã có ${given.join(' và ')} nên cần thêm ${good}.`;
+  }else{
+    given=[AN(i),SD(i,j)];good=AN(j);
+    bad=[{t:SD(i,k),err:`Thêm ${v[i]}${v[k]} thì có hai cạnh và góc xen giữa (c.g.c), không phải g.c.g.`},
+         {t:SD(j,k),err:`Cạnh ${v[j]}${v[k]} cùng cạnh ${v[i]}${v[j]} không kẹp góc ${v[i]}, nên chưa đủ để kết luận.`},
+         {t:AN(k),err:`Góc ${v[k]} không kề cạnh ${v[i]}${v[j]} nên không thành g.c.g.`}];
+    exp=`Cạnh ${v[i]}${v[j]} kề hai góc ${v[i]} và ${v[j]}. Đã có ${given.join(' và ')} nên cần thêm ${good}.`;
+  }
+  return {stem:`Cho ${c.t1} và ${c.t2} có ${given.join(' và ')}. Cần thêm điều kiện nào để ${c.t1} = ${c.t2} theo trường hợp ${CASE_SHORT[kind]}?`,
+    opts:[{t:good}].concat(bad),ans:0,exp};
+};}
+function genCorr(isAngle){return ()=>{
+  const c=ctx(),v=c.v,w=c.w,i=ri(0,2),j=(i+1)%3,k=(i+2)%3;
+  const map=`${v[0]}↔${w[0]}, ${v[1]}↔${w[1]}, ${v[2]}↔${w[2]}`;
+  const err=`Ghép sai cặp đỉnh tương ứng (${map}).`;
+  let good,bad;
+  if(isAngle){good=`∠${v[i]} = ∠${w[i]}`;bad=[`∠${v[i]} = ∠${w[j]}`,`∠${v[i]} = ∠${w[k]}`,`∠${v[j]} = ∠${w[i]}`];}
+  else{good=`${v[i]}${v[j]} = ${w[i]}${w[j]}`;bad=[`${v[i]}${v[j]} = ${w[j]}${w[k]}`,`${v[i]}${v[j]} = ${w[k]}${w[i]}`,`${v[j]}${v[k]} = ${w[i]}${w[j]}`];}
+  return {stem:`Cho ${c.t1} = ${c.t2}. Khẳng định nào sau đây đúng?`,opts:[{t:good}].concat(bad.map(t=>({t,err}))),ans:0,exp:`Các đỉnh tương ứng: ${map}. Vì vậy ${good}.`};
+};}
+function genAngleMC(){
+  for(let n=0;n<100;n++){
+    const c=ctx(),v=c.v,w=c.w,a=ri(35,80),b=ri(35,80),x=180-a-b;
+    if(new Set([x,b,180-a,a+b]).size<4)continue;
+    return {stem:`Cho ${c.t1} = ${c.t2}. Biết ∠${v[0]} = ${a}° và ∠${w[1]} = ${b}°. Số đo ∠${v[2]} bằng:`,
+      opts:[{t:x+'°'},
+        {t:b+'°',err:`Nhầm ∠${v[2]} với ∠${v[1]}: ∠${w[1]} ứng với ∠${v[1]} nên ∠${v[1]} = ${b}°.`},
+        {t:(180-a)+'°',err:`Mới lấy 180° − ${a}°, chưa trừ tiếp ∠${v[1]} = ${b}°.`},
+        {t:(a+b)+'°',err:'Cộng hai góc đã biết thay vì lấy 180° trừ đi chúng.'}],ans:0,
+      exp:`∠${w[1]} ứng với ∠${v[1]} nên ∠${v[1]} = ${b}°. Do đó ∠${v[2]} = 180° − ${a}° − ${b}° = ${x}°.`};
+  }
+  return {stem:'Cho ΔABC = ΔDEF. Biết ∠A = 50° và ∠E = 60°. Số đo ∠C bằng:',opts:[{t:'70°'},{t:'60°',err:'Nhầm ∠C với ∠B.'},{t:'130°',err:'Mới lấy 180° − 50°.'},{t:'110°',err:'Cộng hai góc đã biết.'}],ans:0,exp:'∠B = ∠E = 60° nên ∠C = 180° − 50° − 60° = 70°.'};
+}
+function genPerimMC(){
+  for(let n=0;n<100;n++){
+    const c=ctx(),v=c.v,w=c.w,a=ri(4,9),b=ri(4,9),d=ri(4,9),p=a+b+d;
+    if(new Set([d,b+d,a+d,b]).size<4)continue;
+    return {stem:`Cho ${c.t1} = ${c.t2} có ${v[0]}${v[1]} = ${a} cm, ${w[1]}${w[2]} = ${b} cm và chu vi ${c.t2} bằng ${p} cm. Độ dài cạnh ${v[0]}${v[2]} bằng:`,
+      opts:[{t:d+' cm'},
+        {t:(b+d)+' cm',err:`Mới lấy ${p} − ${a}, chưa trừ ${v[1]}${v[2]} (= ${w[1]}${w[2]} = ${b} cm).`},
+        {t:(a+d)+' cm',err:`Mới lấy ${p} − ${b}, chưa trừ ${v[0]}${v[1]} = ${a} cm.`},
+        {t:b+' cm',err:`Nhầm ${v[0]}${v[2]} với ${v[1]}${v[2]}: chỉ ${v[1]}${v[2]} mới bằng ${w[1]}${w[2]}.`}],ans:0,
+      exp:`${w[1]}${w[2]} ứng với ${v[1]}${v[2]} nên ${v[1]}${v[2]} = ${b} cm. Chu vi ${c.t1} = chu vi ${c.t2} = ${p} cm. Vậy ${v[0]}${v[2]} = ${p} − ${a} − ${b} = ${d} cm.`};
+  }
+  return {stem:'Cho ΔABC = ΔDEF có AB = 5 cm, EF = 6 cm và chu vi ΔDEF bằng 18 cm. Độ dài AC bằng:',opts:[{t:'7 cm'},{t:'13 cm',err:'Chưa trừ BC.'},{t:'12 cm',err:'Chưa trừ AB.'},{t:'6 cm',err:'Nhầm AC với BC.'}],ans:0,exp:'AC = 18 − 5 − 6 = 7 cm.'};
+}
+function lin(p,q){return `${p}x ${q<0?'−':'+'} ${Math.abs(q)}`;}
+function eqParams(){
+  for(let n=0;n<300;n++){
+    const x=ri(2,9),p=ri(3,6),r=ri(1,p-1),s=ri(1,9),q=r*x+s-p*x;
+    if(q!==0&&Math.abs(q)<=12)return {x,p,q,r,s};
+  }
+  return {x:5,p:3,q:-1,r:2,s:4};
+}
+function genEqMC(){
+  const e=eqParams(),c=ctx(),cand=[];
+  const add=(val,err)=>{if(Number.isInteger(val)&&val>0&&val!==e.x&&!cand.some(o=>o.t==='x = '+val))cand.push({t:'x = '+val,err});};
+  add((e.s+e.q)/(e.p-e.r),'Chuyển vế sai dấu hệ số tự do.');
+  add((e.s-e.q)/(e.p+e.r),'Cộng hai hệ số của x thay vì trừ.');
+  [e.x+1,e.x-1,e.x+2].forEach(v=>add(v,'Tính sai: thay x vào hai vế sẽ thấy chúng không bằng nhau.'));
+  return {stem:`Cho ${c.t1} = ${c.t2}. Biết ${c.v[0]}${c.v[1]} = (${lin(e.p,e.q)}) cm và ${c.w[0]}${c.w[1]} = (${lin(e.r,e.s)}) cm. Giá trị của x là:`,
+    opts:[{t:'x = '+e.x}].concat(cand.slice(0,3)),ans:0,
+    exp:`${c.v[0]}${c.v[1]} và ${c.w[0]}${c.w[1]} là hai cạnh tương ứng nên bằng nhau: ${lin(e.p,e.q)} = ${lin(e.r,e.s)}, suy ra x = ${e.x}.`};
+}
+/* Đúng sai: mỗi ý là một tình huống điều kiện riêng */
+function genTF(k,easy){return ()=>{
+  const trapKinds={ccc:['ss'],cgc:['ssa'],gcg:['aaa','sa']}[k],others=['ccc','cgc','gcg'].filter(x=>x!==k);
+  const pickTrap=()=>trapKinds[ri(0,trapKinds.length-1)];
+  for(let tries=0;tries<40;tries++){
+    const c=ctx(),items=[],keys=[];
+    const put=(s,claim,v,level,exp)=>{
+      keys.push(s.conds.slice().sort().join('|')+'>'+claim);
+      items.push({t:`Nếu ${joinConds(s.conds)} thì ${c.t1} = ${c.t2} theo trường hợp ${CASE_SHORT[claim]}.`,v,topic:k,level,exp});
+    };
+    const stem=`Cho ${c.t1} và ${c.t2} (các đỉnh ${c.v.join(', ')} lần lượt ứng với ${c.w.join(', ')}). Mỗi ý dưới đây là một tình huống riêng.`;
+    let s=scen(k,c);put(s,k,true,'NB',s.exp);
+    if(easy){
+      others.forEach(o=>{s=scen(k,c);put(s,o,false,'NB',`Các điều kiện này thuộc trường hợp ${CASE_SHORT[k]}, không phải ${CASE_SHORT[o]}. ${s.exp}`);});
+      s=scen(pickTrap(),c);put(s,k,false,'NB',s.exp);
+      if(new Set(keys).size<4)continue;
+      return {stem,items:shuffle(items)};
+    }
+    s=scen(pickTrap(),c);put(s,k,false,'TH',s.exp);
+    const o=others[ri(0,1)];s=scen(k,c);put(s,o,false,'TH',`Các điều kiện này thuộc trường hợp ${CASE_SHORT[k]}, không phải ${CASE_SHORT[o]}. ${s.exp}`);
+    if(k!=='ccc'&&ri(0,1)){s=scen(k,c);put(s,k,true,'TH',s.exp);}
+    else{s=scen(pickTrap(),c);put(s,k,false,'VD',s.exp);}
+    if(new Set(keys).size<4)continue;
+    return {stem,items:shuffle(items)};
+  }
+  return null;
+};}
+
+/* ============ Câu trả lời ngắn (đa số tự đổi số liệu) ============ */
+const SA=[
+ {id:'s1',topic:'tu',level:'NB',unit:'độ',gen:()=>{const c=ctx(),i=ri(0,2),b=ri(30,85);return{stem:`Cho ${c.t1} = ${c.t2}. Biết ∠${c.v[i]} = ${b}°. Tính số đo ∠${c.w[i]}.`,ans:[b],exp:`${c.v[i]} ứng với ${c.w[i]} nên ∠${c.w[i]} = ∠${c.v[i]} = ${b}°.`};}},
+ {id:'s2',topic:'tu',level:'TH',unit:'độ',gen:()=>{const c=ctx(),a=ri(35,80),b=ri(35,80),x=180-a-b;return{stem:`Cho ${c.t1} = ${c.t2} có ∠${c.v[0]} = ${a}° và ∠${c.v[1]} = ${b}°. Tính số đo ∠${c.w[2]}.`,ans:[x],exp:`${c.w[2]} ứng với ${c.v[2]} nên ∠${c.w[2]} = ∠${c.v[2]} = 180° − ${a}° − ${b}° = ${x}°.`};}},
+ {id:'s3',topic:'tu',level:'TH',unit:'cm',gen:()=>{const c=ctx(),a=ri(5,9),b=ri(5,9),d=ri(5,9),s=a+b+d,v=c.v,w=c.w;return{stem:`Cho ${c.t1} = ${c.t2} có ${v[0]}${v[1]} = ${a} cm, ${v[1]}${v[2]} = ${b} cm và ${w[0]}${w[2]} = ${d} cm. Tính chu vi của ${c.t2}.`,ans:[s],exp:`${w[0]}${w[2]} ứng với ${v[0]}${v[2]} nên ${v[0]}${v[2]} = ${d} cm. Chu vi ${c.t2} bằng chu vi ${c.t1} = ${a} + ${b} + ${d} = ${s} cm.`};}},
+ {id:'s4',topic:'tu',level:'VD',unit:'cm',gen:()=>{const c=ctx(),a=ri(5,9),b=ri(5,9),d=ri(5,9),p=a+b+d,v=c.v,w=c.w;return{stem:`Cho ${c.t1} = ${c.t2} có chu vi ${c.t1} bằng ${p} cm, ${v[0]}${v[1]} = ${a} cm và ${w[0]}${w[2]} = ${d} cm. Tính độ dài cạnh ${w[1]}${w[2]}.`,ans:[b],exp:`${w[0]}${w[2]} ứng với ${v[0]}${v[2]} nên ${v[0]}${v[2]} = ${d} cm; ${w[1]}${w[2]} ứng với ${v[1]}${v[2]}. Vậy ${v[1]}${v[2]} = ${p} − ${a} − ${d} = ${b} cm, suy ra ${w[1]}${w[2]} = ${b} cm.`};}},
+ {id:'s20',topic:'tu',level:'VD',unit:'cm',gen:()=>{const e=eqParams(),c=ctx(),len=e.p*e.x+e.q;return{stem:`Cho ${c.t1} = ${c.t2} có ${c.v[0]}${c.v[1]} = (${lin(e.p,e.q)}) cm và ${c.w[0]}${c.w[1]} = (${lin(e.r,e.s)}) cm. Tính độ dài ${c.v[0]}${c.v[1]}.`,ans:[len],exp:`Hai cạnh tương ứng bằng nhau: ${lin(e.p,e.q)} = ${lin(e.r,e.s)}, suy ra x = ${e.x}. Vậy ${c.v[0]}${c.v[1]} = ${e.p}·${e.x} ${e.q<0?'−':'+'} ${Math.abs(e.q)} = ${len} cm.`};}},
+ {id:'s5',topic:'ccc',level:'NB',unit:'độ',gen:()=>{const c=ctx(),v=c.v,w=c.w,i=ri(0,2),x=ri(40,85);return{stem:`Cho ${c.t1} và ${c.t2} có ${v[0]}${v[1]} = ${w[0]}${w[1]}, ${v[1]}${v[2]} = ${w[1]}${w[2]}, ${v[2]}${v[0]} = ${w[2]}${w[0]}. Biết ∠${v[i]} = ${x}°. Tính số đo ∠${w[i]}.`,ans:[x],exp:`Ba cặp cạnh bằng nhau nên ${c.t1} = ${c.t2} (c.c.c). ${v[i]} ứng với ${w[i]} nên ∠${w[i]} = ∠${v[i]} = ${x}°.`};}},
+ {id:'s6',topic:'ccc',level:'TH',unit:'độ',gen:()=>{const c=ctx(),v=c.v,w=c.w,a=ri(35,80),b=ri(35,80),x=180-a-b;return{stem:`Cho ${c.t1} và ${c.t2} có ${v[0]}${v[1]} = ${w[0]}${w[1]}, ${v[1]}${v[2]} = ${w[1]}${w[2]}, ${v[2]}${v[0]} = ${w[2]}${w[0]}. Biết ∠${v[0]} = ${a}° và ∠${v[1]} = ${b}°. Tính số đo ∠${w[2]}.`,ans:[x],exp:`${c.t1} = ${c.t2} (c.c.c) và ${w[2]} ứng với ${v[2]} nên ∠${w[2]} = ∠${v[2]} = 180° − ${a}° − ${b}° = ${x}°.`};}},
+ {id:'s17',topic:'ccc',level:'TH',unit:'độ',fig:fb(figKite()),gen:()=>{const x=ri(30,80);return ri(0,1)
+   ?{stem:`Cho ΔABC và ΔABD có AC = AD, BC = BD (như hình). Biết ∠ACB = ${x}°. Tính số đo ∠ADB.`,ans:[x],exp:`ΔABC và ΔABD có AC = AD, BC = BD, AB chung nên ΔABC = ΔABD (c.c.c), C ứng với D. Suy ra ∠ADB = ∠ACB = ${x}°.`}
+   :{stem:`Cho ΔABC và ΔABD có AC = AD, BC = BD (như hình). Biết ∠CAB = ${x}°. Tính số đo ∠DAB.`,ans:[x],exp:`ΔABC và ΔABD có AC = AD, BC = BD, AB chung nên ΔABC = ΔABD (c.c.c), C ứng với D. Suy ra ∠DAB = ∠CAB = ${x}°.`};}},
+ {id:'s7',topic:'ccc',level:'VD',unit:'độ',stem:'Cho ΔABC có AB = AC. Gọi M là trung điểm của BC. Tính số đo ∠AMB.',ans:[90],
+  fig:fb(figIso({pt:'M',ticks:{AB:1,AC:1,BP:2,PC:2},alt:'Tam giác ABC có AB bằng AC, M là trung điểm BC'})),
+  exp:'ΔABM và ΔACM có AB = AC, MB = MC, AM chung nên ΔABM = ΔACM (c.c.c), suy ra ∠AMB = ∠AMC. Hai góc này kề bù nên ∠AMB + ∠AMC = 180°, vậy ∠AMB = 90°.'},
+ {id:'s8',topic:'ccc',level:'VD',unit:'độ',fig:fb(figIso({pt:'M',ticks:{AB:1,AC:1,BP:2,PC:2},alt:'Tam giác ABC có AB bằng AC, M là trung điểm BC'})),
+  gen:()=>{const x=2*ri(25,60);return{stem:`Cho ΔABC có AB = AC. Gọi M là trung điểm của BC. Biết ∠BAC = ${x}°. Tính số đo ∠BAM.`,ans:[x/2],exp:`ΔABM và ΔACM có AB = AC, MB = MC, AM chung nên ΔABM = ΔACM (c.c.c), suy ra ∠BAM = ∠CAM. Vậy ∠BAM = ∠BAC : 2 = ${x/2}°.`};}},
+ {id:'s9',topic:'cgc',level:'NB',unit:'cm',gen:()=>{const c=ctx(),v=c.v,w=c.w,a=ri(4,12);return{stem:`Cho ${c.t1} và ${c.t2} có ${v[0]}${v[1]} = ${w[0]}${w[1]}, ∠${v[1]} = ∠${w[1]} và ${v[1]}${v[2]} = ${w[1]}${w[2]}. Biết ${v[0]}${v[2]} = ${a} cm. Tính độ dài ${w[0]}${w[2]}.`,ans:[a],exp:`Hai cạnh và góc xen giữa bằng nhau nên ${c.t1} = ${c.t2} (c.g.c). Hai cạnh tương ứng ${v[0]}${v[2]} và ${w[0]}${w[2]} bằng nhau, vậy ${w[0]}${w[2]} = ${a} cm.`};}},
+ {id:'s10',topic:'cgc',level:'TH',unit:'độ',gen:()=>{const c=ctx(),v=c.v,w=c.w,b=ri(40,80),d=ri(40,80),x=180-b-d;return{stem:`Cho ${c.t1} và ${c.t2} có ${v[0]}${v[1]} = ${w[0]}${w[1]}, ∠${v[0]} = ∠${w[0]} và ${v[0]}${v[2]} = ${w[0]}${w[2]}. Biết ∠${v[1]} = ${b}° và ∠${v[2]} = ${d}°. Tính số đo ∠${w[0]}.`,ans:[x],exp:`Hai cạnh và góc xen giữa bằng nhau nên ${c.t1} = ${c.t2} (c.g.c). ∠${w[0]} = ∠${v[0]} = 180° − ${b}° − ${d}° = ${x}°.`};}},
+ {id:'s11',topic:'cgc',level:'VD',unit:'cm',fig:CGC_FIG,gen:()=>{const k=ri(4,12);return{stem:`Hai đoạn thẳng AB và CD cắt nhau tại O, O là trung điểm của mỗi đoạn thẳng. Biết AC = ${k} cm. Tính độ dài BD.`,ans:[k],exp:`ΔOAC và ΔOBD có OA = OB, ∠AOC = ∠BOD (đối đỉnh), OC = OD nên ΔOAC = ΔOBD (c.g.c). Suy ra BD = AC = ${k} cm.`};}},
+ {id:'s18',topic:'cgc',level:'VD',unit:'độ',fig:CGC_FIG,gen:()=>{const x=ri(30,80);return{stem:`Hai đoạn thẳng AB và CD cắt nhau tại O, O là trung điểm của mỗi đoạn thẳng. Biết ∠OCA = ${x}°. Tính số đo ∠ODB.`,ans:[x],exp:`ΔOAC = ΔOBD (c.g.c) với C ứng với D nên ∠ODB = ∠OCA = ${x}°.`};}},
+ {id:'s12',topic:'cgc',level:'VD',unit:'cm',fig:fb(figIso({pt:'D',arcA:true,ticks:{AB:1,AC:1},alt:'Tam giác ABC có AB bằng AC, AD là phân giác góc A'})),gen:()=>{const k=ri(3,9);return{stem:`Cho ΔABC có AB = AC. Tia phân giác của ∠A cắt BC tại D. Biết BC = ${2*k} cm. Tính độ dài BD.`,ans:[k],exp:`ΔABD và ΔACD có AB = AC, ∠BAD = ∠CAD, AD chung nên ΔABD = ΔACD (c.g.c). Suy ra BD = CD = BC : 2 = ${k} cm.`};}},
+ {id:'s13',topic:'gcg',level:'NB',unit:'cm',gen:()=>{const c=ctx(),v=c.v,w=c.w,a=ri(4,12);return{stem:`Cho ${c.t1} và ${c.t2} có ∠${v[0]} = ∠${w[0]}, ${v[0]}${v[1]} = ${w[0]}${w[1]} và ∠${v[1]} = ∠${w[1]}. Biết ${v[0]}${v[2]} = ${a} cm. Tính độ dài ${w[0]}${w[2]}.`,ans:[a],exp:`Một cạnh và hai góc kề bằng nhau nên ${c.t1} = ${c.t2} (g.c.g). Hai cạnh tương ứng ${v[0]}${v[2]} và ${w[0]}${w[2]} bằng nhau, vậy ${w[0]}${w[2]} = ${a} cm.`};}},
+ {id:'s14',topic:'gcg',level:'TH',unit:'độ',gen:()=>{const c=ctx(),v=c.v,w=c.w,b=ri(40,80),d=ri(40,80),x=180-b-d;return{stem:`Cho ${c.t1} và ${c.t2} có ∠${v[1]} = ∠${w[1]} = ${b}°, ${v[1]}${v[2]} = ${w[1]}${w[2]} và ∠${v[2]} = ∠${w[2]} = ${d}°. Tính số đo ∠${w[0]}.`,ans:[x],exp:`Một cạnh và hai góc kề bằng nhau nên ${c.t1} = ${c.t2} (g.c.g). ∠${w[0]} = ∠${v[0]} = 180° − ${b}° − ${d}° = ${x}°.`};}},
+ {id:'s15',topic:'gcg',level:'VD',unit:'cm',fig:fb(figIso({pt:'D',arcA:true,right:true,ticks:{},alt:'Tam giác ABC, AD là phân giác góc A và vuông góc với BC'})),gen:()=>{const k=ri(3,9);return{stem:`Cho ΔABC. Tia phân giác của ∠A cắt BC tại D và AD ⊥ BC. Biết BC = ${2*k} cm. Tính độ dài BD.`,ans:[k],exp:`ΔABD và ΔACD có ∠BAD = ∠CAD, AD chung, ∠ADB = ∠ADC = 90° nên ΔABD = ΔACD (g.c.g). Suy ra BD = CD = BC : 2 = ${k} cm.`};}},
+ {id:'s19',topic:'gcg',level:'VD',unit:'độ',fig:fb(figIso({pt:'D',arcA:true,right:true,ticks:{},alt:'Tam giác ABC, AD là phân giác góc A và vuông góc với BC'})),gen:()=>{const x=ri(40,75);return{stem:`Cho ΔABC. Tia phân giác của ∠A cắt BC tại D và AD ⊥ BC. Biết ∠ABD = ${x}°. Tính số đo ∠ACD.`,ans:[x],exp:`ΔABD = ΔACD (g.c.g) với B ứng với C nên ∠ACD = ∠ABD = ${x}°.`};}},
+ {id:'s16',topic:'gcg',level:'VD',unit:'cm',fig:CGC2_FIG,gen:()=>{const k=ri(3,9);return{stem:`Hai đoạn thẳng AB và CD cắt nhau tại O, O là trung điểm của AB. Biết ∠OAC = ∠OBD và OC = ${k} cm. Tính độ dài CD.`,ans:[2*k],exp:`ΔOAC và ΔOBD có ∠OAC = ∠OBD, OA = OB, ∠AOC = ∠BOD (đối đỉnh) nên ΔOAC = ΔOBD (g.c.g). Suy ra OD = OC = ${k} cm. O nằm giữa C và D nên CD = OC + OD = ${2*k} cm.`};}}
+].map(q=>Object.assign({type:'sa'},q));
+
+/* ============ Thêm câu nhiều lựa chọn và đúng sai ============ */
+const MC_EXTRA=[
+ {id:'m25',topic:'tu',level:'NB',stem:'Phát biểu nào sau đây về hai tam giác bằng nhau là đúng?',ans:0,opts:[
+   {t:'Hai tam giác bằng nhau khi các cạnh tương ứng bằng nhau và các góc tương ứng bằng nhau'},
+   {t:'Hai tam giác có ba góc tương ứng bằng nhau thì bằng nhau',err:'Ba góc bằng nhau chưa đủ: hai tam giác có thể có độ dài các cạnh khác nhau.'},
+   {t:'Hai tam giác có chu vi bằng nhau thì bằng nhau',err:'Chu vi bằng nhau chưa đủ: các cạnh vẫn có thể dài ngắn khác nhau.'},
+   {t:'Hai tam giác có hai cạnh bằng nhau thì bằng nhau',err:'Hai cạnh bằng nhau chưa đủ để kết luận hai tam giác bằng nhau.'}],
+  exp:'Hai tam giác bằng nhau là hai tam giác có các cạnh tương ứng bằng nhau và các góc tương ứng bằng nhau.'},
+ {id:'m26',topic:'cgc',level:'VD',stem:'Cho ΔABC có AB = AC. Tia phân giác của ∠A cắt BC tại D (như hình). Hai tam giác ABD và ACD bằng nhau theo trường hợp nào?',
+  fig:fb(figIso({pt:'D',arcA:true,ticks:{AB:1,AC:1},alt:'Tam giác ABC có AB bằng AC, AD là phân giác góc A'})),ans:0,opts:[
+   {t:'Cạnh – góc – cạnh (c.g.c)'},
+   {t:'Cạnh – cạnh – cạnh (c.c.c)',err:'Giả thiết chưa cho BD = CD nên chưa dùng được c.c.c.'},
+   {t:'Góc – cạnh – góc (g.c.g)',err:'Giả thiết chỉ cho một cặp góc bằng nhau (∠BAD = ∠CAD), chưa có hai cặp góc kề một cạnh.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'AB = AC, ∠BAD = ∠CAD, AD chung, đủ cho c.g.c.'}],
+  exp:'AB = AC, ∠BAD = ∠CAD (AD là phân giác), AD chung. Góc BAD xen giữa AB và AD, góc CAD xen giữa AC và AD nên ΔABD = ΔACD (c.g.c).'},
+ {id:'m27',topic:'cgc',level:'VD',stem:'Cho ΔABC vuông tại A và ΔDEF vuông tại D có AB = DE và AC = DF. Theo trường hợp nào thì ΔABC = ΔDEF?',ans:0,opts:[
+   {t:'Cạnh – góc – cạnh (c.g.c)'},
+   {t:'Cạnh – cạnh – cạnh (c.c.c)',err:'Giả thiết chưa cho BC = EF nên chưa dùng được c.c.c.'},
+   {t:'Góc – cạnh – góc (g.c.g)',err:'Giả thiết không cho hai cặp góc nhọn bằng nhau.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'∠A = ∠D = 90° xen giữa hai cặp cạnh bằng nhau, đủ cho c.g.c.'}],
+  exp:'∠A = ∠D = 90°. Góc A xen giữa AB và AC, góc D xen giữa DE và DF. Hai cạnh và góc xen giữa bằng nhau nên ΔABC = ΔDEF (c.g.c).'},
+ {id:'m28',topic:'gcg',level:'VD',stem:'Cho ΔABC vuông tại A và ΔDEF vuông tại D có AB = DE và ∠B = ∠E. Theo trường hợp nào thì ΔABC = ΔDEF?',ans:0,opts:[
+   {t:'Góc – cạnh – góc (g.c.g)'},
+   {t:'Cạnh – góc – cạnh (c.g.c)',err:'Giả thiết chỉ có một cặp cạnh bằng nhau, không có hai cặp cạnh.'},
+   {t:'Cạnh – cạnh – cạnh (c.c.c)',err:'Giả thiết chỉ có một cặp cạnh bằng nhau.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'AB kề hai góc A, B và DE kề hai góc D, E; các góc đó bằng nhau nên đủ cho g.c.g.'}],
+  exp:'∠A = ∠D = 90°, AB = DE, ∠B = ∠E. Cạnh AB kề hai góc A và B nên ΔABC = ΔDEF (g.c.g).'},
+ {id:'m29',topic:'ccc',level:'VD',stem:'Cho ΔABC cân tại A và ΔDEF cân tại D có AB = DE và BC = EF. Theo trường hợp nào thì ΔABC = ΔDEF?',ans:0,opts:[
+   {t:'Cạnh – cạnh – cạnh (c.c.c)'},
+   {t:'Cạnh – góc – cạnh (c.g.c)',err:'Giả thiết không cho cặp góc nào bằng nhau.'},
+   {t:'Góc – cạnh – góc (g.c.g)',err:'Giả thiết không cho cặp góc nào bằng nhau.'},
+   {t:'Chưa đủ điều kiện để kết luận',err:'Từ AB = AC và DE = DF suy ra AC = DF, nên đã đủ ba cặp cạnh bằng nhau.'}],
+  exp:'ΔABC cân tại A nên AC = AB; ΔDEF cân tại D nên DF = DE. Mà AB = DE nên AC = DF. Ba cặp cạnh AB = DE, BC = EF, AC = DF bằng nhau nên ΔABC = ΔDEF (c.c.c).'}
+].map(q=>Object.assign({type:'mc'},q));
+const TF_EXTRA=[
+ {id:'t9',topic:'tu',level:'TH',stem:'Xét các phát biểu về hai tam giác bằng nhau.',items:[
+   {t:'Nếu ΔABC = ΔDEF thì chu vi hai tam giác bằng nhau.',v:true,topic:'tu',level:'NB',exp:'Các cạnh tương ứng bằng nhau nên tổng độ dài ba cạnh bằng nhau.'},
+   {t:'Nếu hai tam giác có chu vi bằng nhau thì hai tam giác bằng nhau.',v:false,topic:'tu',level:'NB',exp:'Chu vi bằng nhau chưa đủ: các cạnh vẫn có thể dài ngắn khác nhau.'},
+   {t:'Nếu ΔABC = ΔDEF thì ΔDEF = ΔABC.',v:true,topic:'tu',level:'TH',exp:'Các cạnh và góc tương ứng bằng nhau theo cả hai chiều nên kết luận vẫn đúng khi đổi chỗ hai tam giác.'},
+   {t:'Nếu hai tam giác có ba góc tương ứng bằng nhau thì hai tam giác bằng nhau.',v:false,topic:'tu',level:'TH',exp:'Ba góc bằng nhau chưa đủ: độ dài các cạnh vẫn có thể khác nhau.'}]},
+ {id:'t10',topic:'cgc',level:'VD',stem:'Cho ΔABC vuông tại A và ΔDEF vuông tại D có AB = DE và AC = DF.',items:[
+   {t:'ΔABC = ΔDEF theo trường hợp c.g.c.',v:true,topic:'cgc',level:'NB',exp:'∠A = ∠D = 90° xen giữa hai cặp cạnh bằng nhau.'},
+   {t:'BC = EF.',v:true,topic:'cgc',level:'TH',exp:'Hai tam giác bằng nhau nên hai cạnh tương ứng BC và EF bằng nhau.'},
+   {t:'∠B = ∠F.',v:false,topic:'tu',level:'TH',exp:'B ứng với E nên ∠B = ∠E. Góc ∠F ứng với ∠C.'},
+   {t:'Nếu bỏ giả thiết AC = DF thì vẫn kết luận được ΔABC = ΔDEF.',v:false,topic:'cgc',level:'VD',exp:'Khi đó chỉ có một cặp cạnh và một cặp góc bằng nhau, chưa đủ để kết luận.'}]}
+].map(q=>Object.assign({type:'tf'},q));
+MC.push(...MC_EXTRA);TF.push(...TF_EXTRA);
+
+/* Các câu tự đổi đề và số liệu mỗi lần làm */
+const addMC=(id,topic,level,gen)=>MC.push({id,type:'mc',topic,level,gen});
+['a','b','c'].forEach(x=>{
+  addMC('gc_ccc_'+x,'ccc','NB',genCase(['ccc']));
+  addMC('gc_ccc_t_'+x,'ccc','TH',genCase(['ss']));
+  addMC('gc_cgc_'+x,'cgc','NB',genCase(['cgc']));
+  addMC('gc_cgc_t_'+x,'cgc','TH',genCase(['ssa']));
+  addMC('gc_gcg_'+x,'gcg','NB',genCase(['gcg']));
+  addMC('gc_gcg_t_'+x,'gcg','TH',genCase(['aaa','sa']));
+  addMC('nd_ccc_'+x,'ccc','TH',genNeed('ccc'));
+  addMC('nd_cgc_'+x,'cgc','TH',genNeed('cgc'));
+  addMC('nd_gcg_'+x,'gcg','TH',genNeed('gcg'));
+  addMC('tu_side_'+x,'tu','NB',genCorr(false));
+  addMC('tu_ang_'+x,'tu','NB',genCorr(true));
+  addMC('tu_angle_'+x,'tu','TH',genAngleMC);
+  addMC('tu_perim_'+x,'tu','VD',genPerimMC);
+  addMC('tu_eq_'+x,'tu','VD',genEqMC);
+});
+['a','b'].forEach(x=>['ccc','cgc','gcg'].forEach(k=>TF.push({id:'tg_'+k+'_'+x,type:'tf',topic:k,level:'TH',gen:genTF(k)})));
+['a','b'].forEach(x=>['ccc','cgc','gcg'].forEach(k=>TF.push({id:'tg_'+k+'_nb'+x,type:'tf',topic:k,level:'NB',gen:genTF(k,true)})));
+SA.push(...SA.filter(q=>q.gen).map(q=>Object.assign({},q,{id:q.id+'b'})));
+
+const BANK={mc:MC,tf:TF,sa:SA};
+const TF_SCORE=[0,0.1,0.25,0.5,1];
+const TYPES=['mc','tf','sa'];
+const RECAP=[
+  {k:'tu',fig:figTwo({sides:{AB:1,BC:2,CA:3},ang:{A:1,B:2,C:3},alt:'Hai tam giác bằng nhau với các cạnh và góc tương ứng đánh dấu giống nhau'}),extra:'Viết ΔABC = ΔDEF nghĩa là A↔D, B↔E, C↔F.'},
+  {k:'ccc',fig:figTwo({sides:{AB:1,BC:2,CA:3},alt:'Hai tam giác có ba cặp cạnh bằng nhau'}),extra:'Kí hiệu: c.c.c.'},
+  {k:'cgc',fig:figTwo({sides:{AB:1,BC:2},ang:{B:1},alt:'Hai tam giác có hai cặp cạnh và góc xen giữa bằng nhau'}),extra:'Góc B nằm xen giữa hai cạnh AB và BC.'},
+  {k:'gcg',fig:figTwo({sides:{AB:1},ang:{A:1,B:2},alt:'Hai tam giác có một cạnh và hai góc kề bằng nhau'}),extra:'Cạnh AB kề với hai góc A và B.'}
+];
+
+/* ============ Trạng thái ============ */
+const state={view:'home',name:'',ans:{},pr:{},perm:{},result:null,topicPct:{},weak:[],t0:0,elapsed:0,timedOut:false,code:''};
+const LIMIT={test:30*60,quick:5*60}; // giây
+let tick=null;
+function fmtTime(s){s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function stopTimer(){if(tick){clearInterval(tick);tick=null;}}
+function updateTimer(){
+  if(state.view!=='quiz'||!S)return;
+  const el=document.getElementById('timer'),used=Math.floor((Date.now()-state.t0)/1000);
+  if(S.mode!=='practice'){
+    const lim=LIMIT[S.mode],left=lim-used;
+    if(el){el.textContent='Còn '+fmtTime(left);el.classList.toggle('low',left<=Math.min(300,lim*0.2));}
+    if(left<=0){state.timedOut=true;finish(true);}
+  }else if(el)el.textContent='Đã dùng '+fmtTime(used);
+}
+function startTimer(){stopTimer();updateTimer();if(state.view==='quiz')tick=setInterval(updateTimer,1000);}
+let S=null; // phiên hiện tại: {mode:'test'|'quick'|'practice', spec, title, by:{mc,tf,sa}, list, idx}
+const $app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>{const s=n.toFixed(2).replace(/\.?0+$/,'');return s.replace('.',',');};
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(RNG()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function status(p){return p>=80?['good','Thành thạo']:p>=50?['warn','Cần củng cố']:['bad','Cần học lại'];}
+function inst(q){return q.gen?Object.assign({},q,q.gen()):q;}
+let seen={};try{seen=JSON.parse(localStorage.getItem('tg7_seen')||'{}')||{};}catch(e){seen={};}
+function markSeen(list){list.forEach(q=>{seen[q.id]=(seen[q.id]||0)+1;});try{localStorage.setItem('tg7_seen',JSON.stringify(seen));}catch(e){}}
+function ordered(pool){if(SEEDED)return shuffle(pool);const w=q=>(seen[q.id]||0)*(q.gen?0.25:1);return shuffle(pool).sort((a,b)=>w(a)-w(b));}
+
+/* ============ Dựng phiên làm bài ============ */
+function pick(pool,used){
+  const x=ordered(pool.filter(x=>!used.has(x.id)))[0];used.add(x.id);return x;
+}
+function makeSession(mode,spec,title,by){
+  const list=[];TYPES.forEach(t=>by[t]=by[t].map(inst));
+  TYPES.forEach(t=>by[t].forEach(q=>list.push(q)));
+  const idx={};TYPES.forEach(t=>by[t].forEach((q,i)=>idx[q.id]=i));
+  state.ans={};state.pr={};state.result=null;state.perm={};
+  state.t0=Date.now();state.elapsed=0;state.timedOut=false;if(!SEEDED)markSeen(list);
+  {const keep=RNG;RNG=Math.random;by.mc.forEach(q=>{state.perm[q.id]=shuffle(q.opts.map((_,i)=>i));});RNG=keep;}
+  S={mode,spec,title,by,list,idx};
+}
+function buildTest(){
+  const used=new Set();
+  const mcSlots=[['tu',['NB']],['ccc',['NB','TH']],['cgc',['NB','TH']],['gcg',['NB','TH']],['tu',['TH']],[null,['VD']]];
+  const mc=mcSlots.map(([t,l])=>pick(MC.filter(q=>(!t||q.topic===t)&&l.includes(q.level)),used));
+  const tf=['ccc','cgc','gcg'].map(t=>pick(TF.filter(q=>q.topic===t),used));
+  const sa=TKEYS.map(t=>pick(SA.filter(q=>q.topic===t&&q.level!=='NB'),used));
+  makeSession('test',null,'Bài kiểm tra',{mc,tf,sa});
+}
+function buildQuick(){
+  const used=new Set(),T3=['ccc','cgc','gcg'];
+  const gcOK=q=>q.id.startsWith('gc_')&&!q.id.includes('_t_'),gcTrap=q=>q.id.startsWith('gc_')&&q.id.includes('_t_');
+  const t1=T3[ri(0,2)],t4=T3[ri(0,2)];
+  const mc=[
+    pick(MC.filter(q=>gcOK(q)&&q.topic===t1),used),
+    pick(MC.filter(q=>q.id.startsWith('nd_cgc_')),used),
+    pick(MC.filter(q=>q.id.startsWith('nd_gcg_')),used),
+    pick(MC.filter(q=>gcTrap(q)&&q.topic===t4),used)
+  ];
+  const sa=[pick(SA.filter(q=>q.topic==='gcg'&&q.level!=='VD'),used),pick(SA.filter(q=>(q.topic==='ccc'||q.topic==='cgc')&&q.level!=='VD'),used)];
+  makeSession('quick',null,'Kiểm tra nhanh',{mc,tf:[],sa});
+}
+function buildPractice(spec){
+  let f,title;
+  if(spec.kind==='level'){f=q=>q.level===spec.val;title='Gói '+LEVELS[spec.val];}
+  else if(spec.kind==='topic'){f=q=>q.topic===spec.val;title='Gói '+TOPICS[spec.val].short;}
+  else{f=q=>spec.topics.includes(q.topic);title='Gói ôn điểm yếu';}
+  const nSA=spec.kind==='topic'?4:3;
+  const take=(arr,n)=>ordered(arr.filter(f)).slice(0,n);
+  makeSession('practice',spec,title,{mc:take(MC,6),tf:take(TF,2),sa:take(SA,nSA)});
+}
+
+/* ============ Màn hình: trang chủ ============ */
+function homeHTML(){
+  const weak=state.weak;
+  return `
+  <section class="hero">
+    <h1>Tam giác <em>bằng nhau</em></h1>
+    <p class="lead">Luyện ba trường hợp bằng nhau của tam giác: cạnh – cạnh – cạnh, cạnh – góc – cạnh và góc – cạnh – góc. Chọn một gói luyện tập, hoặc làm bài kiểm tra để lấy điểm.</p>
+    ${figTwo({sides:{AB:1,BC:2,CA:3},ang:{A:1,B:2,C:3},anim:true,alt:'Hai tam giác bằng nhau'})}
+  </section>
+
+  <section class="card stack" style="margin-top:22px">
+    <div>
+      <h2>Luyện tập</h2>
+      <p class="muted" style="margin:6px 0 0">Mỗi gói có khoảng 11 câu rút ngẫu nhiên từ ngân hàng ${MC.length+TF.length+SA.length} câu, nhiều câu tự đổi đề và số liệu mỗi lần làm. Làm xong từng câu bấm Kiểm tra để xem lời giải ngay. Nếu chưa đúng, bạn được thử lại một lần. Không giới hạn thời gian, trang chỉ hiện thời gian bạn đã dùng.</p>
+    </div>
+    <div>
+      <div class="grp">Theo mức độ</div>
+      <div class="pack">${Object.keys(LEVELS).map(k=>`<button class="pk" data-pack="level:${k}"><b>${LEVELS[k]}</b><span>${LEVEL_DESC[k]}</span></button>`).join('')}</div>
+      <div class="grp">Theo nội dung</div>
+      <div class="pack">${TKEYS.map(k=>`<button class="pk" data-pack="topic:${k}"><b>${TOPICS[k].name}</b><span>${TOPICS[k].short==='Tương ứng'?'Cạnh, góc tương ứng và chu vi':'Nhận biết, tính toán và chứng minh'}</span></button>`).join('')}</div>
+      <div class="grp">Gợi ý cho bạn</div>
+      <div class="pack"><button class="pk" data-pack="weak" ${weak.length?'':'disabled'}><b>Gói ôn điểm yếu</b><span>${weak.length?'Các câu thuộc phần bạn còn dưới 80%: '+weak.map(k=>TOPICS[k].short).join(', ')+'.':'Xuất hiện sau khi bạn làm xong một gói hoặc một bài kiểm tra.'}</span></button></div>
+    </div>
+  </section>
+
+  <section class="card stack" style="margin-top:16px">
+    <div>
+      <h2>Kiểm tra</h2>
+      <p class="muted" style="margin:6px 0 0">Có hai bài. Kết quả chỉ hiện sau khi nộp bài, và hết giờ trang tự nộp.</p>
+    </div>
+    <div class="recap">
+      <div class="card"><h3>Bài kiểm tra 30 phút</h3><p>13 câu, 10 điểm: 6 câu nhiều lựa chọn, 3 câu đúng sai (mỗi câu 4 ý) và 4 câu trả lời ngắn.</p></div>
+      <div class="card"><h3>Kiểm tra nhanh 5 phút</h3><p>6 câu, 10 điểm: 4 câu nhiều lựa chọn và 2 câu trả lời ngắn. Hợp để kiểm tra ngay sau khi học xong một trường hợp.</p></div>
+    </div>
+    <div>
+      <label class="fl" for="nm">Họ và tên</label>
+      <input type="text" id="nm" autocomplete="name" placeholder="Ví dụ: Nguyễn Văn An - 7A" value="${esc(state.name)}">
+    </div>
+    <div>
+      <label class="fl" for="mcode">Mã đề (không bắt buộc)</label>
+      <input type="text" id="mcode" autocomplete="off" placeholder="Ví dụ: 7A-01" value="${esc(state.code)}">
+      <p class="small muted" style="margin:6px 0 0">Nếu giáo viên cho mã đề, hãy nhập đúng mã đó: các bạn nhập cùng mã sẽ làm cùng một đề. Để trống thì bạn nhận một đề ngẫu nhiên. Thứ tự đáp án A, B, C, D vẫn được xáo riêng cho từng bạn.</p>
+    </div>
+    <div class="row"><button class="btn" id="start">Bắt đầu bài 30 phút</button><button class="btn" id="startq">Bắt đầu kiểm tra nhanh 5 phút</button></div>
+    <p class="small muted" style="margin:0">Đồng hồ bắt đầu chạy khi bạn bấm nút.</p>
+  </section>
+
+  <section style="margin-top:28px">
+    <h2 style="margin-bottom:12px">Ôn nhanh kiến thức</h2>
+    <div class="recap">
+      ${RECAP.map(r=>`<div class="card"><h3>${TOPICS[r.k].name}</h3><div class="figbox" style="margin:6px 0">${r.fig}</div><p>${TOPICS[r.k].rule}</p><p class="muted small">${r.extra}</p></div>`).join('')}
+    </div>
+  </section>`;
+}
+
+/* ============ Thẻ câu hỏi ============ */
+const PART_NAME={mc:'Phần I',tf:'Phần II',sa:'Phần III'},PART_QUICK={mc:'Phần I',sa:'Phần II'};
+const partName=t=>S.mode==='quick'?PART_QUICK[t]:PART_NAME[t];
+const TYPE_NAME={mc:'Nhiều lựa chọn',tf:'Đúng sai',sa:'Trả lời ngắn'};
+function lbl(t,i,j){
+  const base=S.mode!=='practice'?`${partName(t)}, câu ${i+1}`:`${TYPE_NAME[t]}, câu ${i+1}`;
+  return j==null?base:`${base}, ý ${'abcd'[j]}`;
+}
+function badge(P){
+  if(P.first&&P.first.every(Boolean))return '<span class="st good">Đúng ngay lần đầu</span>';
+  if(P.final)return '<span class="st warn">Đúng ở lần thứ hai</span>';
+  return '<span class="st bad">Chưa đúng</span>';
+}
+function tail(q,P){
+  let h=`<div class="feedbox">${P.msg?`<div class="feed ${P.cls}" role="status">${P.msg}</div>`:''}</div>`;
+  if(P.done){
+    if(q.type==='mc')h+=`<p class="ans-line">Đáp án đúng: <b>${q.opts[q.ans].t}</b></p><div class="exp">${q.exp}</div>`;
+    else if(q.type==='sa')h+=`<p class="ans-line">Đáp án đúng: <b>${q.ans[0]} ${q.unit}</b></p><div class="exp">${q.exp}</div>`;
+  }else h+=`<div class="row" style="margin-top:12px"><button class="btn sm chk" data-q="${q.id}">Kiểm tra</button></div>`;
+  return h;
+}
+function mcHTML(q,i){
+  const pr=S.mode==='practice',P=pr?(state.pr[q.id]||{}):{},done=!!P.done,tried=P.tried||[],cur=state.ans[q.id];
+  const opts=state.perm[q.id].map((oi,j)=>{
+    let cls='opt',dis='';
+    if(pr){
+      if(done){dis='disabled';if(oi===q.ans)cls+=' is-right';else if(cur===oi)cls+=' is-wrong';}
+      else if(tried.includes(oi)){dis='disabled';cls+=' is-wrong';}
+    }
+    return `<label class="${cls}"><input type="radio" name="${q.id}" value="${oi}" ${cur===oi?'checked':''} ${dis}><span class="ol">${'ABCD'[j]}</span><span>${q.opts[oi].t}</span></label>`;
+  }).join('');
+  return `<article class="card q" id="q-${q.id}"><div class="qh"><span class="qn">Câu ${i+1}</span>${pr&&done?badge(P):''}</div>
+    <p class="stem">${q.stem}</p>${q.fig||''}
+    <div class="opts" role="radiogroup" aria-label="Câu ${i+1}">${opts}</div>${pr?tail(q,P):''}</article>`;
+}
+function tfHTML(q,i){
+  const pr=S.mode==='practice',P=pr?(state.pr[q.id]||{}):{},done=!!P.done,a=state.ans[q.id]||[];
+  const rows=q.items.map((it,j)=>{
+    const cls=v=>{let c='opt';if(done){if(it.v===v)c+=' is-right';else if(a[j]===v)c+=' is-wrong';}return c;};
+    const dis=done?'disabled':'';
+    return `<div class="tfr"><div class="tx">${q.items.length>1?`<b>${'abcd'[j]})</b>`:''}${it.t}</div>
+      <div class="tfb" role="radiogroup" aria-label="Câu ${i+1}, ý ${'abcd'[j]}">
+        <label class="${cls(true)}"><input type="radio" name="${q.id}-${j}" value="1" ${a[j]===true?'checked':''} ${dis}><span>Đúng</span></label>
+        <label class="${cls(false)}"><input type="radio" name="${q.id}-${j}" value="0" ${a[j]===false?'checked':''} ${dis}><span>Sai</span></label>
+      </div>${done?`<div class="exp"><b>Đáp án: ${it.v?'Đúng':'Sai'}.</b> ${it.exp}</div>`:''}</div>`;
+  }).join('');
+  return `<article class="card q" id="q-${q.id}"><div class="qh"><span class="qn">Câu ${i+1}</span>${pr&&done?badge(P):''}</div>
+    <p class="stem">${q.stem}</p>${q.fig||''}<div class="tf">${rows}</div>${pr?tail(q,P):''}</article>`;
+}
+function saHTML(q,i){
+  const pr=S.mode==='practice',P=pr?(state.pr[q.id]||{}):{},done=!!P.done;
+  return `<article class="card q" id="q-${q.id}"><div class="qh"><span class="qn">Câu ${i+1}</span>${pr&&done?badge(P):''}</div>
+    <p class="stem">${q.stem}</p>${q.fig||''}
+    <div class="sa"><label class="fl" for="in-${q.id}" style="margin:0">Đáp án:</label>
+    <input type="text" id="in-${q.id}" data-sa="${q.id}" inputmode="decimal" autocomplete="off" placeholder="Nhập số" value="${esc(state.ans[q.id]||'')}" ${done?'disabled':''}>
+    <span class="muted">${q.unit}</span></div>${pr?tail(q,P):''}</article>`;
+}
+const CARD={mc:mcHTML,tf:tfHTML,sa:saHTML};
+
+/* ============ Màn hình: làm bài ============ */
+function partHead(k,t,d){return `<div class="part">${k?`<div class="kicker">${k}</div>`:''}<h2>${t}</h2><p>${d}</p></div>`;}
+function quizHTML(){
+  const test=S.mode!=='practice',quick=S.mode==='quick';
+  const desc={
+    mc:test?(quick?'Mỗi câu chỉ có một đáp án đúng. 1,25 điểm mỗi câu.':'Mỗi câu chỉ có một đáp án đúng. 0,5 điểm mỗi câu.'):'Chọn một đáp án rồi bấm Kiểm tra.',
+    tf:test?(quick?'Mỗi câu là một mệnh đề, chọn Đúng hoặc Sai. 1,25 điểm mỗi câu.':'Mỗi câu có 4 ý, chọn Đúng hoặc Sai cho từng ý. Đúng 1 ý được 0,1 điểm, 2 ý được 0,25, 3 ý được 0,5, cả 4 ý được 1 điểm.'):'Chọn Đúng hoặc Sai cho cả 4 ý rồi bấm Kiểm tra.',
+    sa:test?(quick?'Nhập kết quả là một số. Có thể dùng dấu phẩy hoặc dấu chấm. 2,5 điểm mỗi câu.':'Nhập kết quả là một số. Có thể dùng dấu phẩy hoặc dấu chấm. 1 điểm mỗi câu.'):'Nhập kết quả là một số rồi bấm Kiểm tra.'
+  };
+  const heads={mc:['Phần I','Câu hỏi nhiều lựa chọn'],tf:[quick?'Phần I':'Phần II','Câu hỏi đúng sai'],sa:[quick?'Phần II':'Phần III','Câu hỏi trả lời ngắn']};
+  let body='';
+  TYPES.forEach(t=>{
+    if(!S.by[t].length)return;
+    body+=partHead(test?heads[t][0]:'',test?heads[t][1]:TYPE_NAME[t],desc[t]);
+    body+=`<div class="stack">${S.by[t].map(CARD[t]).join('')}</div>`;
+  });
+  return `<div class="bar-sticky"><div class="row" style="justify-content:space-between"><b id="plabel"></b><span class="small muted">${test?esc(state.name||'Học sinh'):S.title}</span><b id="timer" class="timer"></b></div><div class="prog"><i id="pbar"></i></div></div>
+  ${body}
+  <div id="warn"></div>
+  <div class="row" style="margin-top:22px"><button class="btn" id="submit">${test?'Nộp bài':'Xem kết quả'}</button><button class="btn ghost" id="back">Quay lại</button></div>`;
+}
+function totalItems(){return S.list.reduce((s,q)=>s+(q.type==='tf'?q.items.length:1),0);}
+function answered(){
+  let n=0;
+  S.by.mc.forEach(q=>{if(state.ans[q.id]!=null)n++;});
+  S.by.tf.forEach(q=>{const a=state.ans[q.id]||[];q.items.forEach((_,j)=>{if(typeof a[j]==='boolean')n++;});});
+  S.by.sa.forEach(q=>{if(String(state.ans[q.id]||'').trim()!=='')n++;});
+  return n;
+}
+function doneCount(){return S.list.filter(q=>state.pr[q.id]&&state.pr[q.id].done).length;}
+function updateProgress(){
+  const l=document.getElementById('plabel'),b=document.getElementById('pbar');if(!l)return;
+  if(S.mode!=='practice'){const n=answered(),t=totalItems();l.textContent=`Đã trả lời ${n}/${t}`;b.style.width=(100*n/t)+'%';}
+  else{const n=doneCount(),t=S.list.length;l.textContent=`Đã hoàn thành ${n}/${t} câu`;b.style.width=(100*n/t)+'%';}
+}
+
+/* ============ Chấm điểm ============ */
+function parseNum(s){
+  s=String(s).trim().replace(/,/g,'.').replace(/[^0-9.\-\/]/g,'');
+  if(!s)return NaN;
+  if(s.includes('/')){const [a,b]=s.split('/');return parseFloat(a)/parseFloat(b);}
+  return parseFloat(s);
+}
+function evalQ(q,a){
+  if(q.type==='mc')return [a===q.ans];
+  if(q.type==='tf'){a=a||[];return q.items.map((it,j)=>a[j]===it.v);}
+  const v=parseNum(a==null?'':a);
+  return [!isNaN(v)&&q.ans.some(x=>Math.abs(x-v)<1e-6)];
+}
+function grade(){
+  const test=S.mode!=='practice',quick=S.mode==='quick';
+  const items=[],sc={mc:0,tf:0,sa:0},errs=[],qres=[];
+  const ansOf=q=>test?state.ans[q.id]:(state.pr[q.id]&&state.pr[q.id].firstAns);
+  const oksOf=q=>{
+    if(test)return evalQ(q,ansOf(q));
+    const P=state.pr[q.id];return P&&P.first?P.first:Array(q.type==='tf'?q.items.length:1).fill(false);
+  };
+  S.by.mc.forEach((q,i)=>{
+    const a=ansOf(q),ok=oksOf(q)[0];
+    if(ok)sc.mc+=quick?1.25:0.5;else if(a!=null&&q.opts[a]&&q.opts[a].err)errs.push({where:lbl('mc',i),topic:q.topic,text:q.opts[a].err});
+    items.push({topic:q.topic,level:q.level,ok,label:lbl('mc',i)});
+    qres.push({kind:'mc',q,i,a,ok,pts:ok?(quick?1.25:0.5):0,max:quick?1.25:0.5});
+  });
+  S.by.tf.forEach((q,i)=>{
+    const a=ansOf(q)||[],oks=oksOf(q);let k=0;
+    q.items.forEach((it,j)=>{
+      const ok=oks[j];if(ok)k++;
+      items.push({topic:it.topic,level:it.level,ok,label:lbl('tf',i,q.items.length>1?j:null)});
+      if(!ok&&typeof a[j]==='boolean')errs.push({where:lbl('tf',i,q.items.length>1?j:null),topic:it.topic,text:it.exp});
+    });
+    const pts=quick?(k?1.25:0):TF_SCORE[k];sc.tf+=pts;
+    qres.push({kind:'tf',q,i,a,oks,k,pts,max:quick?1.25:1});
+  });
+  S.by.sa.forEach((q,i)=>{
+    const raw=ansOf(q)||'',ok=oksOf(q)[0];
+    if(ok)sc.sa+=quick?2.5:1;
+    items.push({topic:q.topic,level:q.level,ok,label:lbl('sa',i)});
+    qres.push({kind:'sa',q,i,raw,ok,pts:ok?(quick?2.5:1):0,max:quick?2.5:1});
+  });
+  const topics={};TKEYS.forEach(k=>topics[k]={c:0,n:0});
+  const levels={NB:{c:0,n:0},TH:{c:0,n:0},VD:{c:0,n:0}};
+  items.forEach(it=>{topics[it.topic].n++;levels[it.level].n++;if(it.ok){topics[it.topic].c++;levels[it.level].c++;}});
+  const total=Math.round((sc.mc+sc.tf+sc.sa)*100)/100;
+  return {items,sc,total,topics,levels,errs,qres};
+}
+function pct(o){return o.n?Math.round(100*o.c/o.n):0;}
+function updateWeak(r){
+  TKEYS.forEach(k=>{if(r.topics[k].n)state.topicPct[k]=pct(r.topics[k]);});
+  state.weak=TKEYS.filter(k=>state.topicPct[k]!==undefined&&state.topicPct[k]<80).sort((a,b)=>state.topicPct[a]-state.topicPct[b]);
+}
+
+/* ============ Luyện tập: kiểm tra từng câu ============ */
+function setFeed(id,msg,cls){
+  const box=document.querySelector(`#q-${id} .feedbox`);
+  if(box)box.innerHTML=`<div class="feed ${cls}" role="status">${msg}</div>`;
+}
+function practiceCheck(id){
+  const q=S.list.find(x=>x.id===id);if(!q)return;
+  const P=state.pr[id]||(state.pr[id]={attempts:0,done:false,tried:[]});
+  if(P.done)return;
+  const a=state.ans[id];
+  if(q.type==='mc'&&a==null)return setFeed(id,'Hãy chọn một đáp án trước.','info');
+  if(q.type==='tf'){const arr=a||[];if(q.items.some((_,j)=>typeof arr[j]!=='boolean'))return setFeed(id,'Hãy chọn Đúng hoặc Sai cho cả 4 ý trước.','info');}
+  if(q.type==='sa'&&String(a||'').trim()==='')return setFeed(id,'Hãy nhập đáp án trước.','info');
+  P.attempts++;
+  const oks=evalQ(q,a),all=oks.every(Boolean);
+  if(P.attempts===1){P.first=oks;P.firstAns=JSON.parse(JSON.stringify(a));}
+  if(all){
+    P.done=true;P.final=true;P.cls='ok';
+    P.msg=P.attempts===1?'Đúng rồi!':'Đúng ở lần thử thứ hai.';
+  }else if(P.attempts===1){
+    P.cls='bad';
+    if(q.type==='mc'){
+      const e=q.opts[a].err;P.tried.push(a);delete state.ans[id];
+      P.msg='Chưa đúng.'+(e?' '+e:'')+' Hãy chọn lại một đáp án khác.';
+    }else if(q.type==='tf'){
+      const k=oks.filter(Boolean).length;P.msg=`Mới đúng ${k}/${q.items.length} ý. Hãy xem lại các ý và thử một lần nữa.`;
+    }else P.msg='Đáp án chưa đúng. Hãy kiểm tra lại cách tính và thử một lần nữa.';
+  }else{
+    P.done=true;P.final=false;P.cls='bad';P.msg='Chưa đúng. Đáp án và lời giải ở bên dưới.';
+  }
+  const el=document.getElementById('q-'+id);
+  el.outerHTML=CARD[q.type](q,S.idx[id]);
+  updateProgress();
+}
+
+/* ============ Màn hình: kết quả ============ */
+function barRow(label,o){
+  const p=pct(o),[cls,txt]=status(p);
+  return `<div class="topic"><div class="trow"><b>${label}</b><span class="st ${cls}">${txt} · ${p}%</span></div>
+    <div class="track" role="img" aria-label="${label}: ${p}%"><i class="fill-${cls}" style="width:${p}%"></i></div>
+    <div class="small muted">${o.c}/${o.n} ý đúng</div></div>`;
+}
+function makeCode(r){
+  const t={};TKEYS.forEach(k=>t[k]=[r.topics[k].c,r.topics[k].n]);
+  const o={v:1,n:state.name||'Học sinh',d:new Date().toISOString().slice(0,10),s:r.total,m:state.elapsed,L:LIMIT[S.mode],q:S.mode,k:state.code,p:[r.sc.mc,r.sc.tf,r.sc.sa],t};
+  return 'TG7-'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+}
+function reviewHTML(r){
+  const sym=ok=>ok?'<span class="mark-ok">✓ Đúng</span>':'<span class="mark-no">✗ Chưa đúng</span>';
+  return r.qres.map(x=>{
+    const tp=x.kind==='tf'?'':TOPICS[x.q.topic].short;
+    let body='';const head=`${partName(x.kind)} · Câu ${x.i+1}`;
+    if(x.kind==='mc'){
+      const chosen=x.a==null?'Chưa trả lời':x.q.opts[x.a].t,right=x.q.opts[x.q.ans].t;
+      body=`<p class="stem">${x.q.stem}</p>${x.q.fig||''}<p class="ans-line">Bạn chọn: <b>${chosen}</b></p><p class="ans-line">Đáp án đúng: <b>${right}</b></p>`+(x.ok||x.a==null||!x.q.opts[x.a].err?'':`<p class="ans-line mark-no">Lỗi thường gặp: ${x.q.opts[x.a].err}</p>`)+`<div class="exp">${x.q.exp}</div>`;
+    }else if(x.kind==='tf'){
+      body=`<p class="stem">${x.q.stem}</p>${x.q.fig||''}`+x.q.items.map((it,j)=>{
+        const a=x.a[j],your=typeof a==='boolean'?(a?'Đúng':'Sai'):'Chưa chọn';
+        return `<div class="exp" style="margin-top:8px">${x.q.items.length>1?`<b>${'abcd'[j]})</b> `:''}${it.t}<br>Bạn chọn: <b>${your}</b> · Đáp án: <b>${it.v?'Đúng':'Sai'}</b> ${sym(x.oks[j])} <span class="chip">${TOPICS[it.topic].short}</span><br><span class="muted">${it.exp}</span></div>`;
+      }).join('');
+    }else{
+      body=`<p class="stem">${x.q.stem}</p>${x.q.fig||''}<p class="ans-line">Bạn nhập: <b>${x.raw?esc(x.raw):'Chưa trả lời'}</b></p><p class="ans-line">Đáp án đúng: <b>${x.q.ans[0]} ${x.q.unit}</b></p><div class="exp">${x.q.exp}</div>`;
+    }
+    const right=x.kind==='tf'?`${x.k}/${x.q.items.length} ý đúng · ${fmt(x.pts)}/${fmt(x.max)} điểm`:`${sym(x.ok)} · ${fmt(x.pts)}/${fmt(x.max)} điểm`;
+    return `<details class="rv"><summary><span><b>${head}</b> ${tp?`<span class="chip">${tp}</span>`:''}</span><span class="small">${right}</span></summary><div class="body">${body}</div></details>`;
+  }).join('');
+}
+function resultHTML(){
+  const r=state.result,test=S.mode!=='practice',quick=S.mode==='quick',ts=TKEYS.filter(k=>r.topics[k].n).map(k=>({k,p:pct(r.topics[k])}));
+  const weak=ts.filter(t=>t.p<80).sort((a,b)=>a.p-b.p),strong=ts.filter(t=>t.p>=80);
+  let comment;
+  if(!weak.length)comment=ts.length>1?'Bạn nắm vững cả bốn nội dung. Có thể chuyển sang các bài chứng minh hai tam giác bằng nhau có nhiều bước hơn.':'Bạn nắm vững nội dung này. Hãy thử gói của nội dung hoặc mức độ khác.';
+  else{
+    comment=`Phần cần ưu tiên ôn trước: <b>${TOPICS[weak[0].k].name}</b> (${weak[0].p}%).`;
+    if(strong.length)comment+=` Bạn làm tốt phần ${strong.map(t=>'<b>'+TOPICS[t.k].short+'</b>').join(', ')}.`;
+  }
+  const missed=k=>r.items.filter(it=>it.topic===k&&!it.ok).map(it=>it.label);
+  const correct=r.items.filter(it=>it.ok).length;
+  const head=test
+    ?`<div class="big">${fmt(r.total)}<small> / 10</small></div><div><div class="muted small" style="margin-bottom:6px">${esc(state.name||'Học sinh')}${quick?' · Kiểm tra nhanh':''}${state.code?' · Mã đề '+esc(state.code):''}</div><div class="parts">${quick?`<span class="chip">Phần I: ${fmt(r.sc.mc)}/5</span><span class="chip">Phần II: ${fmt(r.sc.sa)}/5</span>`:`<span class="chip">Phần I: ${fmt(r.sc.mc)}/3</span><span class="chip">Phần II: ${fmt(r.sc.tf)}/3</span><span class="chip">Phần III: ${fmt(r.sc.sa)}/4</span>`}<span class="chip">Thời gian: ${fmtTime(state.elapsed)}</span></div></div>`
+    :`<div class="big">${correct}<small> / ${r.items.length}</small></div><div><div class="muted small" style="margin-bottom:6px">${S.title}</div><div class="parts"><span class="chip">ý đúng ngay lần đầu</span><span class="chip">Thời gian: ${fmtTime(state.elapsed)}</span><span class="chip">Luyện tập không tính điểm</span></div></div>`;
+  const code=test?makeCode(r):'';
+  return `
+  ${test&&state.timedOut?'<div class="warnbar" role="alert" style="margin:0 0 12px">Đã hết '+(LIMIT[S.mode]/60)+' phút nên bài được nộp tự động. Những ý chưa làm tính là chưa đúng.</div>':''}
+  <section class="card stack" style="margin-top:8px">
+    <div class="score">${head}</div>
+    <p style="margin:0">${comment}</p>
+  </section>
+
+  <section class="card" style="margin-top:16px"><h2 style="margin-bottom:14px">Kết quả theo nội dung kiến thức</h2>
+    ${TKEYS.filter(k=>r.topics[k].n).map(k=>barRow(TOPICS[k].name,r.topics[k])).join('')}
+  </section>
+
+  <section class="card" style="margin-top:16px"><h2 style="margin-bottom:14px">Kết quả theo mức độ</h2>
+    ${Object.keys(LEVELS).filter(k=>r.levels[k].n).map(k=>barRow(LEVELS[k],r.levels[k])).join('')}
+  </section>
+
+  <section class="card" style="margin-top:16px"><h2 style="margin-bottom:6px">Nên ôn gì tiếp theo</h2>
+    ${weak.length?weak.map(t=>`<div class="advice"><h3>${TOPICS[t.k].name}</h3><p><b>Nhớ:</b> ${TOPICS[t.k].rule}</p><p><b>Lưu ý:</b> ${TOPICS[t.k].tip}</p><p class="small muted">Xem lại: ${missed(t.k).join('; ')}.</p></div>`).join(''):'<p class="muted">Không có nội dung nào dưới 80%.</p>'}
+    ${r.errs.length?`<h3 style="margin-top:18px">Những lỗi bạn đã mắc</h3><ul class="plain">${r.errs.map(e=>`<li><b>${e.where}</b> <span class="chip">${TOPICS[e.topic].short}</span><br><span class="muted">${e.text}</span></li>`).join('')}</ul>`:''}
+  </section>
+
+  ${test?`<section style="margin-top:22px"><h2 style="margin-bottom:12px">Xem lại từng câu</h2>${reviewHTML(r)}</section>
+
+  <section class="card codebox" style="margin-top:16px"><h2>Gửi kết quả cho giáo viên</h2>
+    <p class="muted small" style="margin:0">Sao chép mã dưới đây và gửi cho giáo viên (Zalo, lớp học trực tuyến). Mã chỉ chứa tên, điểm và kết quả theo nội dung.</p>
+    <textarea id="code" readonly rows="3" aria-label="Mã kết quả">${code}</textarea>
+    <div class="row"><button class="btn sm" id="copy">Sao chép mã</button><span class="small muted" id="copied" role="status"></span></div>
+  </section>`:''}
+
+  <div class="row" style="margin-top:22px">
+    ${state.weak.length?`<button class="btn" id="weakpack">Luyện gói ôn điểm yếu</button>`:''}
+    <button class="btn ${state.weak.length?'ghost':''}" id="again">${test?(state.code?'Làm lại đề này':'Làm đề kiểm tra khác'):'Làm gói này lần nữa'}</button>
+    <button class="btn ghost" id="home">Về trang đầu</button>
+  </div>`;
+}
+
+/* ============ Màn hình: giáo viên ============ */
+function teacherHTML(){
+  return `<section class="hero"><h1>Bảng <em>tổng hợp</em> lớp</h1>
+    <p class="lead">Dán mã kết quả bài kiểm tra của học sinh, mỗi mã một dòng. Bảng sẽ cho thấy điểm từng em và nội dung kiến thức cả lớp còn yếu. Mỗi học sinh nhận một đề khác nhau nhưng cùng cấu trúc, nên điểm vẫn so sánh được.</p></section>
+    <section class="card stack" style="margin-top:18px">
+      <div><label class="fl" for="codes">Mã kết quả</label><textarea id="codes" placeholder="TG7-eyJ2IjoxLC..."></textarea></div>
+      <div class="row"><button class="btn" id="analyze">Tổng hợp</button><button class="btn ghost" id="clearc">Xóa</button></div>
+      <div id="tout" aria-live="polite"></div>
+    </section>`;
+}
+function decodeCode(line){
+  line=line.trim();if(!line.startsWith('TG7-'))return null;
+  try{const o=JSON.parse(decodeURIComponent(escape(atob(line.slice(4)))));if(o&&o.t&&typeof o.s==='number')return o;}catch(e){}
+  return null;
+}
+function analyzeCodes(){
+  const lines=document.getElementById('codes').value.split(/\r?\n/).filter(l=>l.trim());
+  const rows=[],bad=[];
+  lines.forEach((l,i)=>{const o=decodeCode(l);if(o)rows.push(o);else bad.push(i+1);});
+  const out=document.getElementById('tout');
+  if(!rows.length){out.innerHTML=`<div class="warnbar">${lines.length?'Không đọc được mã nào. Hãy kiểm tra mã đã được sao chép đầy đủ, bắt đầu bằng TG7-.':'Hãy dán ít nhất một mã kết quả.'}</div>`;return;}
+  const cell=o=>{if(!o||!o[1])return '<td class="cell">–</td>';const p=Math.round(100*o[0]/o[1]);return `<td class="cell ${status(p)[0]}">${p}%</td>`;};
+  const avg=TKEYS.map(k=>{let c=0,n=0;rows.forEach(r=>{if(r.t[k]){c+=r.t[k][0];n+=r.t[k][1];}});return [c,n];});
+  const mean=rows.reduce((s,r)=>s+r.s,0)/rows.length;
+  const timed=rows.filter(r=>typeof r.m==='number'),meanT=timed.length?timed.reduce((s,r)=>s+r.m,0)/timed.length:null;
+  const tcell=r=>typeof r.m==='number'?fmtTime(r.m):'–';
+  const flag=r=>(typeof r.m==='number'&&r.m<0.25*(r.L||1800)&&r.s<5)?' <span class="chip">Làm nhanh, điểm thấp</span>':'';
+  const chips=r=>(r.q==='quick'?' <span class="chip">Nhanh 5 phút</span>':'')+(r.k?` <span class="chip">Mã đề ${esc(r.k)}</span>`:'');
+  const weakCount=TKEYS.map(k=>rows.filter(r=>r.t[k]&&r.t[k][1]&&100*r.t[k][0]/r.t[k][1]<50).length);
+  const worst=TKEYS.map((k,i)=>({k,p:avg[i][1]?100*avg[i][0]/avg[i][1]:100})).sort((a,b)=>a.p-b.p)[0];
+  out.innerHTML=`${bad.length?`<div class="warnbar" style="margin:0 0 12px">Bỏ qua ${bad.length} dòng không đọc được (dòng ${bad.join(', ')}).</div>`:''}
+    <p style="margin:0 0 10px"><b>${rows.length}</b> học sinh · điểm trung bình <b>${fmt(mean)}</b>. Nội dung cả lớp còn yếu nhất: <b>${TOPICS[worst.k].name}</b> (${Math.round(worst.p)}%).</p>
+    <div class="tablewrap"><table><thead><tr><th>Học sinh</th><th>Điểm</th><th>Thời gian</th>${TKEYS.map(k=>`<th>${TOPICS[k].short}</th>`).join('')}</tr></thead><tbody>
+    ${rows.sort((a,b)=>a.s-b.s).map(r=>`<tr><td>${esc(r.n)}${chips(r)}${flag(r)}</td><td><b>${fmt(r.s)}</b></td><td>${tcell(r)}</td>${TKEYS.map(k=>cell(r.t[k])).join('')}</tr>`).join('')}
+    <tr><td><b>Cả lớp</b></td><td><b>${fmt(mean)}</b></td><td>${meanT===null?'–':fmtTime(meanT)}</td>${avg.map(cell).join('')}</tr>
+    <tr><td class="muted">Số em dưới 50%</td><td></td><td></td>${weakCount.map(n=>`<td class="cell">${n}</td>`).join('')}</tr>
+    </tbody></table></div>
+    <p class="small muted" style="margin:10px 0 0">Màu: xanh từ 80%, vàng từ 50% đến dưới 80%, đỏ dưới 50%. Các em được xếp từ điểm thấp đến cao để dễ thấy em cần hỗ trợ. Nhãn "Làm nhanh, điểm thấp" hiện khi em nộp bài trong chưa đầy một phần tư thời gian cho phép mà dưới 5 điểm, thường là em chưa làm kỹ nên cần hỏi lại. Mã cũ chưa có thời gian sẽ hiện dấu gạch.</p>`;
+}
+
+/* ============ Điều hướng và sự kiện ============ */
+function render(){
+  const gv=location.hash==='#giao-vien';
+  document.getElementById('nav-hs').setAttribute('aria-current',gv?'false':'page');
+  document.getElementById('nav-gv').setAttribute('aria-current',gv?'page':'false');
+  if(gv){stopTimer();$app.innerHTML=teacherHTML();return;}
+  if(state.view==='home'){stopTimer();$app.innerHTML=homeHTML();}
+  else if(state.view==='quiz'){$app.innerHTML=quizHTML();updateProgress();startTimer();}
+  else{stopTimer();$app.innerHTML=resultHTML();}
+  window.scrollTo(0,0);
+}
+function normCode(s){return String(s||'').trim().toUpperCase().replace(/\s+/g,'');}
+function withCode(mode,fn){
+  if(!state.code){fn();return;}
+  RNG=mulberry32(hashStr(mode+'|'+state.code));SEEDED=true;
+  try{fn();}finally{RNG=Math.random;SEEDED=false;}
+}
+function startTest(){withCode('test',buildTest);state.view='quiz';render();}
+function startQuick(){withCode('quick',buildQuick);state.view='quiz';render();}
+function startPack(spec){buildPractice(spec);state.view='quiz';render();}
+function parsePack(s){
+  if(s==='weak')return {kind:'weak',topics:state.weak.slice()};
+  const [kind,val]=s.split(':');return {kind,val};
+}
+function finish(force){
+  const test=S.mode!=='practice';
+  const left=test?totalItems()-answered():S.list.length-doneCount();
+  if(left>0&&!force){
+    const w=document.getElementById('warn');
+    w.innerHTML=test
+      ?`<div class="warnbar" role="alert">Còn <b>${left}</b> ý chưa trả lời. Những ý này sẽ tính là chưa đúng.<div class="row" style="margin-top:10px"><button class="btn sm" id="force">Vẫn nộp bài</button><button class="btn ghost sm" id="keep">Làm tiếp</button></div></div>`
+      :`<div class="warnbar" role="alert">Còn <b>${left}</b> câu chưa kiểm tra xong. Những câu này sẽ tính là chưa đúng ngay lần đầu.<div class="row" style="margin-top:10px"><button class="btn sm" id="force">Vẫn xem kết quả</button><button class="btn ghost sm" id="keep">Làm tiếp</button></div></div>`;
+    w.scrollIntoView({block:'center'});return;
+  }
+  stopTimer();
+  state.elapsed=Math.floor((Date.now()-state.t0)/1000);
+  if(test)state.elapsed=Math.min(state.elapsed,LIMIT[S.mode]);
+  state.result=grade();updateWeak(state.result);state.view='result';render();
+}
+document.addEventListener('click',e=>{
+  const pk=e.target.closest('[data-pack]');
+  if(pk&&!pk.disabled){startPack(parsePack(pk.dataset.pack));return;}
+  const ck=e.target.closest('.chk');
+  if(ck){practiceCheck(ck.dataset.q);return;}
+  const id=e.target.id;
+  if(id==='start'||id==='startq'){state.name=document.getElementById('nm').value.trim();state.code=normCode(document.getElementById('mcode').value);if(id==='start')startTest();else startQuick();}
+  else if(id==='submit')finish(false);
+  else if(id==='force')finish(true);
+  else if(id==='keep')document.getElementById('warn').innerHTML='';
+  else if(id==='back'){state.view='home';render();}
+  else if(id==='again'){if(S.mode==='test')startTest();else if(S.mode==='quick')startQuick();else startPack(S.spec.kind==='weak'?{kind:'weak',topics:state.weak.length?state.weak.slice():S.spec.topics}:S.spec);}
+  else if(id==='weakpack')startPack({kind:'weak',topics:state.weak.slice()});
+  else if(id==='home'){state.view='home';render();}
+  else if(id==='copy'){
+    const t=document.getElementById('code'),m=document.getElementById('copied');
+    t.focus();t.select();
+    (navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(()=>{m.textContent='Đã sao chép.';}).catch(()=>{m.textContent='Hãy nhấn giữ vùng chọn rồi chọn Sao chép.';});
+  }
+  else if(id==='analyze')analyzeCodes();
+  else if(id==='clearc'){document.getElementById('codes').value='';document.getElementById('tout').innerHTML='';}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;if(t.type!=='radio')return;
+  const m=t.name.match(/^(.+)-(\d)$/);
+  if(m){const a=state.ans[m[1]]||(state.ans[m[1]]=[]);a[+m[2]]=t.value==='1';}
+  else state.ans[t.name]=+t.value;
+  updateProgress();
+});
+document.addEventListener('input',e=>{
+  const id=e.target.dataset&&e.target.dataset.sa;
+  if(id){state.ans[id]=e.target.value;updateProgress();}
+});
+window.addEventListener('hashchange',render);
+render();
+</script>
+</body>
+</html>
