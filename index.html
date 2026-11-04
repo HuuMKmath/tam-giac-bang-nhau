@@ -752,7 +752,7 @@ const RECAP=[
 /* ============ Trạng thái ============ */
 const state={view:'home',name:'',ans:{},pr:{},perm:{},result:null,topicPct:{},weak:[],t0:0,elapsed:0,timedOut:false,code:''};
 const LIMIT={test:25*60,quick:5*60}; // giây
-const SHEET_URL=''; // địa chỉ Google Apps Script (kết thúc bằng /exec); để trống thì chỉ dùng mã gửi tay
+const SHEET_URL='https://script.google.com/macros/s/AKfycbymfKnTorrA9GSsgjJddmICBqaEzffOWhY1Ubm-CWFxbqrXSVWC9flu3tWYoyt3L2w/exec'; // địa chỉ Google Apps Script (kết thúc bằng /exec); để trống thì chỉ dùng mã gửi tay
 let tick=null;
 function fmtTime(s){s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
 function stopTimer(){if(tick){clearInterval(tick);tick=null;}}
