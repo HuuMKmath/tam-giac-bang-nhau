@@ -750,7 +750,7 @@ const RECAP=[
 ];
 
 /* ============ Trạng thái ============ */
-const state={view:'home',name:'',ans:{},pr:{},perm:{},result:null,topicPct:{},weak:[],t0:0,elapsed:0,timedOut:false,code:''};
+const state={view:'home',name:'',ans:{},pr:{},perm:{},result:null,topicPct:{},weak:[],t0:0,elapsed:0,timedOut:false,code:'',cls:''};
 const LIMIT={test:25*60,quick:5*60}; // giây
 const SHEET_URL='https://script.google.com/macros/s/AKfycbymfKnTorrA9GSsgjJddmICBqaEzffOWhY1Ubm-CWFxbqrXSVWC9flu3tWYoyt3L2w/exec'; // địa chỉ Google Apps Script (kết thúc bằng /exec); để trống thì chỉ dùng mã gửi tay
 let tick=null;
@@ -857,7 +857,12 @@ function homeHTML(){
     </div>
     <div>
       <label class="fl" for="nm">Họ và tên</label>
-      <input type="text" id="nm" autocomplete="name" placeholder="Ví dụ: Nguyễn Văn An - 7A" value="${esc(state.name)}">
+      <input type="text" id="nm" autocomplete="name" placeholder="Ví dụ: Nguyễn Văn An" value="${esc(state.name)}">
+    </div>
+    <div>
+      <label class="fl" for="cls">Lớp (bắt buộc khi làm bài kiểm tra)</label>
+      <input type="text" id="cls" autocomplete="off" placeholder="Ví dụ: 7A1" maxlength="8" value="${esc(state.cls)}">
+      <p class="small muted" id="clserr" role="alert" style="margin:6px 0 0;color:var(--bad,#b3261e)"></p>
     </div>
     <div>
       <label class="fl" for="mcode">Mã đề (không bắt buộc)</label>
@@ -1070,7 +1075,7 @@ function barRow(label,o){
 }
 function makeCode(r){
   const t={};TKEYS.forEach(k=>t[k]=[r.topics[k].c,r.topics[k].n]);
-  const o={v:1,n:state.name||'Học sinh',d:new Date().toISOString().slice(0,10),s:r.total,m:state.elapsed,L:LIMIT[S.mode],q:S.mode,k:state.code,p:[r.sc.mc,r.sc.tf,r.sc.sa],t};
+  const o={v:1,n:state.name||'Học sinh',d:new Date().toISOString().slice(0,10),s:r.total,m:state.elapsed,L:LIMIT[S.mode],q:S.mode,k:state.code,p:[r.sc.mc,r.sc.tf,r.sc.sa],t,c:state.cls};
   return 'TG7-'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 }
 function setSent(msg,retry){
@@ -1117,7 +1122,7 @@ function resultHTML(){
   const missed=k=>r.items.filter(it=>it.topic===k&&!it.ok).map(it=>it.label);
   const correct=r.items.filter(it=>it.ok).length;
   const head=test
-    ?`<div class="big">${fmt(r.total)}<small> / 10</small></div><div><div class="muted small" style="margin-bottom:6px">${esc(state.name||'Học sinh')}${quick?' · Kiểm tra nhanh':''}${state.code?' · Mã đề '+esc(state.code):''}</div><div class="parts">${quick?`<span class="chip">Phần I: ${fmt(r.sc.mc)}/5</span><span class="chip">Phần II: ${fmt(r.sc.sa)}/5</span>`:`<span class="chip">Phần I: ${fmt(r.sc.mc)}/3</span><span class="chip">Phần II: ${fmt(r.sc.tf)}/3</span><span class="chip">Phần III: ${fmt(r.sc.sa)}/4</span>`}<span class="chip">Thời gian: ${fmtTime(state.elapsed)}</span></div></div>`
+    ?`<div class="big">${fmt(r.total)}<small> / 10</small></div><div><div class="muted small" style="margin-bottom:6px">${esc(state.name||'Học sinh')}${state.cls?' · Lớp '+esc(state.cls):''}${quick?' · Kiểm tra nhanh':''}${state.code?' · Mã đề '+esc(state.code):''}</div><div class="parts">${quick?`<span class="chip">Phần I: ${fmt(r.sc.mc)}/5</span><span class="chip">Phần II: ${fmt(r.sc.sa)}/5</span>`:`<span class="chip">Phần I: ${fmt(r.sc.mc)}/3</span><span class="chip">Phần II: ${fmt(r.sc.tf)}/3</span><span class="chip">Phần III: ${fmt(r.sc.sa)}/4</span>`}<span class="chip">Thời gian: ${fmtTime(state.elapsed)}</span></div></div>`
     :`<div class="big">${correct}<small> / ${r.items.length}</small></div><div><div class="muted small" style="margin-bottom:6px">${S.title}</div><div class="parts"><span class="chip">ý đúng ngay lần đầu</span><span class="chip">Thời gian: ${fmtTime(state.elapsed)}</span><span class="chip">Luyện tập không tính điểm</span></div></div>`;
   const code=test?makeCode(r):'';
   return `
@@ -1183,7 +1188,7 @@ function analyzeCodes(){
   const timed=rows.filter(r=>typeof r.m==='number'),meanT=timed.length?timed.reduce((s,r)=>s+r.m,0)/timed.length:null;
   const tcell=r=>typeof r.m==='number'?fmtTime(r.m):'–';
   const flag=r=>(typeof r.m==='number'&&r.m<0.25*(r.L||1800)&&r.s<5)?' <span class="chip">Làm nhanh, điểm thấp</span>':'';
-  const chips=r=>(r.q==='quick'?' <span class="chip">Nhanh 5 phút</span>':'')+(r.k?` <span class="chip">Mã đề ${esc(r.k)}</span>`:'');
+  const chips=r=>(r.c?` <span class="chip">Lớp ${esc(r.c)}</span>`:'')+(r.q==='quick'?' <span class="chip">Nhanh 5 phút</span>':'')+(r.k?` <span class="chip">Mã đề ${esc(r.k)}</span>`:'');
   const weakCount=TKEYS.map(k=>rows.filter(r=>r.t[k]&&r.t[k][1]&&100*r.t[k][0]/r.t[k][1]<50).length);
   const worst=TKEYS.map((k,i)=>({k,p:avg[i][1]?100*avg[i][0]/avg[i][1]:100})).sort((a,b)=>a.p-b.p)[0];
   out.innerHTML=`${bad.length?`<div class="warnbar" style="margin:0 0 12px">Bỏ qua ${bad.length} dòng không đọc được (dòng ${bad.join(', ')}).</div>`:''}
@@ -1241,7 +1246,8 @@ document.addEventListener('click',e=>{
   const ck=e.target.closest('.chk');
   if(ck){practiceCheck(ck.dataset.q);return;}
   const id=e.target.id;
-  if(id==='start'||id==='startq'){state.name=document.getElementById('nm').value.trim();state.code=normCode(document.getElementById('mcode').value);if(id==='start')startTest();else startQuick();}
+  if(id==='start'||id==='startq'){state.name=document.getElementById('nm').value.trim();state.cls=normCode(document.getElementById('cls').value);state.code=normCode(document.getElementById('mcode').value);
+    if(!state.cls){document.getElementById('clserr').textContent='Hãy nhập lớp của bạn (ví dụ 7A1) trước khi làm bài kiểm tra.';document.getElementById('cls').focus();return;}if(id==='start')startTest();else startQuick();}
   else if(id==='submit')finish(false);
   else if(id==='force')finish(true);
   else if(id==='keep')document.getElementById('warn').innerHTML='';
