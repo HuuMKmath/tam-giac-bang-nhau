@@ -6,7 +6,7 @@ Các trang luyện toán chấm tự động trên trình duyệt (Toán Kết n
 
 | Lớp | Bài | Thư mục | Mã kết quả |
 |---|---|---|---|
-| 6 | Bội chung. Bội chung nhỏ nhất | `boi-chung-nho-nhat/` | `BC6-` |
+| 6 | Bội chung, bội chung nhỏ nhất | `boi-chung-nho-nhat/` | `BC6-` |
 | 7 | Tam giác bằng nhau | thư mục gốc (`index.html`) | `TG7-` |
 
 Trang chung liệt kê các bài: `cac-bai/`.
