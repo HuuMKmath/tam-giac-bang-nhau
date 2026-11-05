@@ -676,8 +676,8 @@ const TYPES=['mc','tf','sa'];
 
 /* ============ Hình: dải các bội ============ */
 function mstrip(a,b,N){
-  const row=k=>{let s='';for(let x=k;x<=N;x+=k)s+=`<i class="${x%a===0&&x%b===0?'c':''}">${x}</i>`;return s;};
-  const common=[];for(let x=1;x<=N;x++)if(x%a===0&&x%b===0)common.push(x);
+  const row=k=>{let s='';for(let x=0;x<=N;x+=k)s+=`<i class="${x%a===0&&x%b===0?'c':''}">${x}</i>`;return s;};
+  const common=[];for(let x=0;x<=N;x++)if(x%a===0&&x%b===0)common.push(x);
   return `<div class="figbox ms" role="img" aria-label="Các bội của ${a} và ${b} đến ${N}. Bội chung là ${common.join(', ')}"><div class="r"><b>B(${a})</b>${row(a)}</div><div class="r"><b>B(${b})</b>${row(b)}</div><div class="small muted">Các số đậm, màu đỏ là bội chung: ${common.join(', ')}.</div></div>`;
 }
 const RECAP=[
