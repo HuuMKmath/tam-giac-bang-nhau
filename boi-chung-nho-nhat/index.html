@@ -1010,7 +1010,7 @@ function barRow(label,o){
     <div class="track" role="img" aria-label="${label}: ${p}%"><i class="fill-${cls}" style="width:${p}%"></i></div>
     <div class="small muted">${o.c}/${o.n} ý đúng</div></div>`;
 }
-const SHEET_URL=''; // địa chỉ Google Apps Script (kết thúc bằng /exec); để trống thì chỉ dùng mã gửi tay
+const SHEET_URL='https://script.google.com/macros/s/AKfycbymfKnTorrA9GSsgjJddmICBqaEzffOWhY1Ubm-CWFxbqrXSVWC9flu3tWYoyt3L2w/exec'; // địa chỉ Google Apps Script (kết thúc bằng /exec); để trống thì chỉ dùng mã gửi tay
 const CODE_PREFIX='BC6-';
 function makeCode(r){
   const t={};TKEYS.forEach(k=>t[k]=[r.topics[k].c,r.topics[k].n]);
