@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bội chung nhỏ nhất – Toán 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&display=swap" rel="stylesheet">
+<style>
+/* Worksheet on graph paper. Blue ink for text, red pencil for the common multiples. */
+:root{
+  --paper:#f2f6fc; --card:#ffffff; --ink:#13203a; --muted:#54627f; --line:#cdd7e9;
+  --grid:rgba(52,96,170,.08); --accent:#1f4fd8; --accent-ink:#ffffff; --mark:#d9342b; --tri:#eaf0fc;
+  --good:#17754a; --good-bg:#e4f4ea; --warn:#9a5b00; --warn-bg:#fff0d4; --bad:#b3261e; --bad-bg:#fde8e6;
+  --display:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0d1730; --card:#142245; --ink:#e8eefc; --muted:#9fb0d4; --line:#2b3c6b;
+    --grid:rgba(140,170,255,.07); --accent:#8aa9ff; --accent-ink:#0d1730; --mark:#ff7f72; --tri:#1a2b57;
+    --good:#58d19a; --good-bg:#12372d; --warn:#f3b955; --warn-bg:#3b2d10; --bad:#ff8a80; --bad-bg:#40191b;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0d1730; --card:#142245; --ink:#e8eefc; --muted:#9fb0d4; --line:#2b3c6b;
+  --grid:rgba(140,170,255,.07); --accent:#8aa9ff; --accent-ink:#0d1730; --mark:#ff7f72; --tri:#1a2b57;
+  --good:#58d19a; --good-bg:#12372d; --warn:#f3b955; --warn-bg:#3b2d10; --bad:#ff8a80; --bad-bg:#40191b;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+  color:var(--ink); font:16px/1.65 var(--body); -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 72px}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+sup{font-size:.72em;line-height:0}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0;font-size:.82rem;color:var(--muted);flex-wrap:wrap}
+.top b{color:var(--ink);font-weight:600;letter-spacing:.02em}
+.top nav{display:flex;gap:16px;flex-wrap:wrap}
+.top nav a{color:var(--muted);text-decoration:none;border-bottom:1.5px solid transparent;padding-bottom:1px}
+.top nav a[aria-current="page"]{color:var(--ink);border-color:var(--mark)}
+
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.3rem,8vw,3.9rem);font-weight:700;letter-spacing:-.01em}
+h1 em{color:var(--accent);font-weight:600}
+h2{font-size:1.5rem;font-weight:700}
+h3{font-size:1.15rem;font-weight:700}
+.lead{font-size:1.08rem;color:var(--muted);max-width:56ch;margin:14px 0 0}
+
+.hero{padding:12px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+
+.btn{appearance:none;border:0;background:var(--accent);color:var(--accent-ink);font-weight:600;padding:12px 22px;border-radius:10px;cursor:pointer;min-height:46px}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn.sm{padding:8px 14px;min-height:38px;font-size:.9rem}
+input[type=text],textarea{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{min-height:140px;resize:vertical;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem}
+label.fl{display:block;font-weight:600;font-size:.9rem;margin-bottom:6px}
+
+.figbox{background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:8px 10px;max-width:400px;margin:10px 0}
+.figbox.ms{max-width:none}
+.figbox p{margin:2px 0}
+.ms{display:flex;flex-direction:column;gap:6px;font-size:.88rem}
+.ms .r{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.ms .r b{min-width:54px;font-family:var(--display)}
+.ms i{font-style:normal;min-width:30px;text-align:center;padding:2px 4px;border-radius:6px;border:1px solid var(--line);background:var(--card);font-variant-numeric:tabular-nums}
+.ms i.c{border-color:var(--mark);color:var(--mark);font-weight:700}
+
+.grp{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mark);margin:18px 0 8px}
+.grp:first-of-type{margin-top:6px}
+.pack{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.pk{appearance:none;text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-height:68px}
+.pk:hover{border-color:var(--accent)}
+.pk b{font-family:var(--display);font-size:1.02rem}
+.pk span{font-size:.84rem;color:var(--muted);line-height:1.4}
+.pk[disabled]{opacity:.55;cursor:not-allowed}
+.pk[disabled]:hover{border-color:var(--line)}
+.recap{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:640px){.recap{grid-template-columns:1fr 1fr}}
+.recap .card{display:flex;flex-direction:column;gap:6px}
+.recap h3{font-size:1.02rem}
+.recap p{margin:0;font-size:.93rem}
+.chip{display:inline-block;font-size:.74rem;font-weight:600;padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted);background:var(--paper);white-space:nowrap}
+
+.bar-sticky{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:1px solid var(--line);margin:0 -16px 16px;padding:10px 16px}
+.timer{font-variant-numeric:tabular-nums;font-size:.95rem}
+.timer.low{color:var(--bad)}
+.prog{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:6px}
+.prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.part{margin:28px 0 12px}
+.part .kicker{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mark)}
+.part p{margin:4px 0 0;color:var(--muted);font-size:.92rem}
+.q{margin-bottom:14px}
+.qh{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin-bottom:6px}
+.qn{font-weight:700;font-family:var(--display);font-size:1.08rem}
+.stem{margin:0}
+.opts{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.opt{position:relative;display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;background:var(--card)}
+.opt:hover{border-color:var(--accent)}
+.opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.opt .ol{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-weight:600;font-size:.85rem}
+.opt:has(input:checked){border-color:var(--accent);background:var(--tri)}
+.opt:has(input:checked) .ol{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.opt:has(input:focus-visible){outline:3px solid var(--accent);outline-offset:2px}
+.opt:has(input:disabled){cursor:default}
+.opt:has(input:disabled):hover{border-color:var(--line)}
+.opt.is-right,.opt.is-right:hover{border-color:var(--good);background:var(--good-bg)}
+.opt.is-right .ol{background:var(--good);color:var(--paper);border-color:var(--good)}
+.opt.is-wrong,.opt.is-wrong:hover{border-color:var(--bad);background:var(--bad-bg)}
+.opt.is-wrong .ol{background:var(--bad);color:var(--paper);border-color:var(--bad)}
+.tf{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.tfr{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 0;border-top:1px dashed var(--line)}
+.tfr .tx{flex:1 1 260px}
+.tfr .tx b{font-family:var(--display);margin-right:6px}
+.tfr .exp{flex-basis:100%;margin-top:0}
+.tfb{display:flex;gap:8px}
+.tfb .opt{padding:7px 16px;border-radius:99px;font-weight:600;font-size:.92rem}
+.sa{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.sa input{max-width:180px}
+.warnbar{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:10px;padding:12px 14px;margin-top:16px}
+.feed{margin-top:12px;padding:10px 12px;border-radius:8px;font-size:.94rem}
+.feed.ok{background:var(--good-bg);color:var(--good)}
+.feed.bad{background:var(--bad-bg);color:var(--bad)}
+.feed.info{background:var(--warn-bg);color:var(--warn)}
+.exp{background:var(--paper);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:.94rem}
+
+.score{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.big{font-family:var(--display);font-weight:700;font-size:clamp(3rem,14vw,4.6rem);line-height:1;letter-spacing:-.02em}
+.big small{font-size:.4em;color:var(--muted);font-weight:600}
+.parts{display:flex;gap:8px;flex-wrap:wrap}
+.parts .chip{font-size:.85rem;padding:5px 12px}
+.topic{padding:14px 0;border-top:1px solid var(--line)}
+.topic:first-child{border-top:0;padding-top:0}
+.trow{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.track{height:12px;border-radius:99px;background:var(--line);margin:8px 0 6px;overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px}
+.st{font-size:.8rem;font-weight:700;padding:2px 10px;border-radius:99px;white-space:nowrap}
+.st.good{background:var(--good-bg);color:var(--good)}
+.st.warn{background:var(--warn-bg);color:var(--warn)}
+.st.bad{background:var(--bad-bg);color:var(--bad)}
+.fill-good{background:var(--good)} .fill-warn{background:var(--warn)} .fill-bad{background:var(--bad)}
+.advice{border-left:4px solid var(--mark);padding:2px 0 2px 14px;margin:10px 0}
+.advice p{margin:4px 0}
+ul.plain{margin:6px 0 0;padding-left:20px}
+ul.plain li{margin:3px 0}
+details.rv{border:1px solid var(--line);border-radius:10px;background:var(--card);margin-bottom:8px}
+details.rv summary{cursor:pointer;padding:11px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;list-style:none}
+details.rv summary::-webkit-details-marker{display:none}
+details.rv .body{padding:0 14px 14px;border-top:1px dashed var(--line)}
+.mark-ok{color:var(--good);font-weight:700} .mark-no{color:var(--bad);font-weight:700}
+.ans-line{margin:6px 0;font-size:.94rem}
+.codebox{display:flex;flex-direction:column;gap:8px}
+
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;font-variant-numeric:tabular-nums}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+td.cell{font-weight:600;text-align:center}
+td.cell.good{color:var(--good)} td.cell.warn{color:var(--warn)} td.cell.bad{color:var(--bad)}
+.tablewrap{overflow-x:auto}
+[hidden]{display:none!important}
+footer{margin-top:40px;color:var(--muted);font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <b>Toán 6 · Kết nối tri thức · Bội chung. Bội chung nhỏ nhất</b>
+    <nav aria-label="Chọn chế độ">
+      <a href="../cac-bai/" id="nav-hub">Tất cả các bài</a>
+      <a href="#" id="nav-hs" aria-current="page">Học sinh</a>
+      <a href="#giao-vien" id="nav-gv">Giáo viên</a>
+    </nav>
+  </header>
+
+  <main id="app"></main>
+
+  <footer>Bài luyện chấm tự động ngay trên trình duyệt. Kết quả không được lưu trên máy chủ; học sinh gửi mã kết quả của bài kiểm tra cho giáo viên để tổng hợp.</footer>
+</div>
+
+<script>
+"use strict";
+/* ============ Toán số học ============ */
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const lcm=(a,b)=>a/gcd(a,b)*b;
+const lcmN=(...v)=>v.reduce(lcm);
+function fac(n){const m={};for(let p=2;n>1;p++)while(n%p===0){m[p]=(m[p]||0)+1;n/=p;}return m;}
+function facStr(m){return Object.keys(m).map(Number).sort((x,y)=>x-y).map(p=>m[p]>1?`${p}<sup>${m[p]}</sup>`:`${p}`).join(' · ');}
+function facVal(m){return Object.keys(m).reduce((s,p)=>s*Math.pow(+p,m[p]),1);}
+function why(x,a,b){
+  const da=x%a===0,db=x%b===0;
+  if(da&&db)return `${x} chia hết cho cả ${a} và ${b}`;
+  if(da)return `${x} chia hết cho ${a} nhưng không chia hết cho ${b}`;
+  if(db)return `${x} chia hết cho ${b} nhưng không chia hết cho ${a}`;
+  return `${x} không chia hết cho ${a} và cũng không chia hết cho ${b}`;
+}
+function lcmWhy(a,b){
+  const l=lcm(a,b),g=gcd(a,b),m=Math.max(a,b),s=Math.min(a,b);
+  if(g===1)return `${a} và ${b} nguyên tố cùng nhau nên BCNN(${a}, ${b}) = ${a} · ${b} = ${l}`;
+  if(m%s===0)return `${m} chia hết cho ${s} nên BCNN(${a}, ${b}) = ${m}`;
+  return `${a} = ${facStr(fac(a))}; ${b} = ${facStr(fac(b))}; BCNN(${a}, ${b}) = ${facStr(fac(l))} = ${l}`;
+}
+function timeStr(mins){const h=6+Math.floor(mins/60),mm=mins%60;return mm?`${h} giờ ${mm} phút`:`${h} giờ`;}
+
+/* ============ Ngẫu nhiên có hạt giống ============ */
+let RNG=Math.random,SEEDED=false;
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19;}h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return(h^h>>>16)>>>0;}
+const ri=(a,b)=>a+Math.floor(RNG()*(b-a+1));
+const sel=a=>a[ri(0,a.length-1)];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(RNG()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* Cặp số: 'gen' (ƯCLN > 1, không chia hết nhau), 'cop' (nguyên tố cùng nhau), 'mul' (số này là bội của số kia) */
+function pairKind(kind,mx,maxL){
+  mx=mx||36;maxL=maxL||300;
+  for(let n=0;n<400;n++){
+    let a,b;
+    if(kind==='cop'){a=ri(3,Math.min(mx,20));b=ri(3,Math.min(mx,20));if(a===b||gcd(a,b)!==1)continue;}
+    else if(kind==='mul'){a=ri(2,Math.min(12,mx));b=a*ri(2,6);if(b>mx*2)continue;}
+    else{a=ri(4,mx);b=ri(4,mx);if(a===b||gcd(a,b)===1||a%b===0||b%a===0)continue;}
+    if(lcm(a,b)>maxL)continue;
+    return RNG()<.5?[a,b]:[b,a];
+  }
+  return kind==='cop'?[8,9]:kind==='mul'?[6,18]:[12,18];
+}
+function pickOpts(goodT,cands){
+  const seen=new Set([goodT]),out=[];
+  for(const c of cands){if(!seen.has(c.t)){seen.add(c.t);out.push({t:c.t,err:c.err});}if(out.length===3)break;}
+  return out;
+}
+const FB_MC=()=>({stem:'Số nào sau đây là bội chung của 4 và 6?',opts:[{t:'12'},{t:'8',err:'8 chia hết cho 4 nhưng không chia hết cho 6, nên chưa phải bội chung.'},{t:'18',err:'18 chia hết cho 6 nhưng không chia hết cho 4, nên chưa phải bội chung.'},{t:'10',err:'10 không chia hết cho 4 và cũng không chia hết cho 6, nên chưa phải bội chung.'}],ans:0,exp:'12 chia hết cho cả 4 và 6, nên 12 là bội chung của 4 và 6.'});
+const FB_TF=()=>({stem:'Cho hai số a = 4 và b = 6. Xét các phát biểu sau:',items:[
+  {t:'12 là bội chung của 4 và 6.',v:true,topic:'bc',level:'NB',exp:'12 chia hết cho cả 4 và 6.'},
+  {t:'8 là bội chung của 4 và 6.',v:false,topic:'bc',level:'NB',exp:'8 chia hết cho 4 nhưng không chia hết cho 6.'},
+  {t:'BCNN(4, 6) = 12.',v:true,topic:'ts',level:'TH',exp:'4 = 2<sup>2</sup>; 6 = 2 · 3; BCNN(4, 6) = 2<sup>2</sup> · 3 = 12.'},
+  {t:'BCNN(4, 6) = 24.',v:false,topic:'ts',level:'TH',exp:'24 là bội chung nhưng không nhỏ nhất, vì 12 nhỏ hơn.'}]});
+
+/* ============ Bộ sinh câu nhiều lựa chọn ============ */
+function genDef(){
+  for(let n=0;n<300;n++){
+    const [a,b]=pairKind('gen',24,120),l=lcm(a,b),good=l*ri(1,3);
+    const ca=[],cb=[];for(let t=2;t<=8;t++){if((a*t)%b)ca.push(a*t);if((b*t)%a)cb.push(b*t);}
+    if(!ca.length||!cb.length)continue;
+    const dA=sel(ca),dB=sel(cb);
+    let dC=a+b;if(dC%a===0||dC%b===0)dC=l+1;
+    if(new Set([good,dA,dB,dC]).size<4)continue;
+    const E=x=>({t:''+x,err:why(x,a,b)+', nên chưa phải bội chung.'});
+    return {stem:`Số nào sau đây là bội chung của ${a} và ${b}?`,opts:[{t:''+good},E(dA),E(dB),E(dC)],ans:0,exp:`${why(good,a,b)}, nên ${good} là bội chung của ${a} và ${b}.`};
+  }
+  return FB_MC();
+}
+function genSet(){
+  for(let n=0;n<300;n++){
+    const [a,b]=pairKind('gen',20,120),l=lcm(a,b),m=Math.max(a,b),s=Math.min(a,b);
+    const trip=x=>[x,2*x,3*x].join(', '),good=trip(l);
+    const cands=[
+      {t:trip(m),err:`Đây chỉ là các bội của ${m}; ${m} không chia hết cho ${s}.`},
+      {t:trip(a*b),err:`${a*b} là một bội chung nhưng chưa nhỏ nhất, vì còn ${l} nhỏ hơn.`},
+      {t:[l,2*l,4*l].join(', '),err:`Bỏ sót ${3*l}: các bội chung liên tiếp là ${trip(l)}.`},
+      {t:[0,l,2*l].join(', '),err:'Đề yêu cầu bội chung khác 0, nên không kể số 0.'}];
+    const opts=[{t:good}].concat(pickOpts(good,cands));
+    if(opts.length<4)continue;
+    return {stem:`Ba bội chung nhỏ nhất khác 0 của ${a} và ${b} là:`,opts,ans:0,exp:`BCNN(${a}, ${b}) = ${l}. Các bội chung khác 0 là các bội của ${l}: ${trip(l)}, ...`};
+  }
+  return FB_MC();
+}
+function genFind(kind){return ()=>{
+  for(let n=0;n<300;n++){
+    const [a,b]=pairKind(kind,36,300),l=lcm(a,b),g=gcd(a,b),m=Math.max(a,b),s=Math.min(a,b),p=a*b;
+    const cands=[
+      {t:''+p,err:kind==='gen'?`Đây là tích ${a} · ${b}: chỉ là một bội chung, chưa nhỏ nhất vì ${a} và ${b} có ước chung ${g}.`:`Tích ${a} · ${b} là một bội chung nhưng chưa nhỏ nhất, vì ${m} đã chia hết cho ${s}.`},
+      {t:''+g,err:`Nhầm với ƯCLN(${a}, ${b}) = ${g}.`},
+      {t:''+m,err:`Chỉ lấy số lớn hơn; ${m} không chia hết cho ${s}.`},
+      {t:''+(a+b),err:'Cộng hai số không cho bội chung nhỏ nhất.'},
+      {t:''+(2*l),err:`${2*l} là một bội chung nhưng không phải nhỏ nhất, vì ${l} nhỏ hơn.`}];
+    const opts=[{t:''+l}].concat(pickOpts(''+l,cands));
+    if(opts.length<4)continue;
+    return {stem:`BCNN(${a}, ${b}) bằng:`,opts,ans:0,exp:lcmWhy(a,b)+'.'};
+  }
+  return FB_MC();
+};}
+const FAC_FB={A:{2:2,3:1},B:{2:1,5:1}};
+function facPack(A,B){
+  const M={},Mn={},Co={},S={};
+  new Set(Object.keys(A).concat(Object.keys(B))).forEach(p=>{
+    const x=A[p]||0,y=B[p]||0;
+    M[p]=Math.max(x,y);S[p]=x+y;if(x&&y){Mn[p]=Math.min(x,y);Co[p]=Math.max(x,y);}
+  });
+  return {A,B,M,Mn,Co,S,a:facVal(A),b:facVal(B),l:facVal(M),sM:facStr(M),sMn:facStr(Mn),sCo:facStr(Co),sS:facStr(S)};
+}
+function genFacData(){
+  for(let n=0;n<500;n++){
+    const ps=shuffle([2,3,5,7]).slice(0,3);
+    const A={},B={};
+    ps.forEach(p=>{const x=ri(0,2),y=ri(0,2);if(x)A[p]=x;if(y)B[p]=y;});
+    if(!Object.keys(A).length||!Object.keys(B).length)continue;
+    const d=facPack(A,B);
+    if(!Object.keys(d.Mn).length)continue;
+    if(!ps.some(p=>!!A[p]!==!!B[p]))continue;
+    if(new Set([d.sM,d.sMn,d.sCo,d.sS]).size<4)continue;
+    if(d.a===d.b||d.a>250||d.b>250||d.l>700||d.a<2||d.b<2)continue;
+    return d;
+  }
+  return facPack(FAC_FB.A,FAC_FB.B);
+}
+function genFac(){
+  const d=genFacData();
+  return {stem:`Cho a = ${facStr(d.A)} và b = ${facStr(d.B)}. BCNN(a, b) bằng:`,
+    opts:[{t:d.sM},
+      {t:d.sMn,err:'Đây là ƯCLN: lấy thừa số chung với số mũ nhỏ nhất. BCNN lấy cả thừa số chung và riêng, với số mũ lớn nhất.'},
+      {t:d.sCo,err:'Thiếu các thừa số nguyên tố riêng; BCNN phải có cả thừa số chung và thừa số riêng.'},
+      {t:d.sS,err:'Đã cộng các số mũ (như khi nhân a với b); BCNN lấy số mũ lớn nhất của mỗi thừa số.'}],ans:0,
+    exp:`Lấy tất cả các thừa số nguyên tố chung và riêng, mỗi thừa số với số mũ lớn nhất: BCNN(a, b) = ${d.sM} = ${d.l}.`};
+}
+function threeData(maxL){
+  for(let n=0;n<500;n++){
+    const a=ri(2,24),b=ri(2,24),c=ri(2,24);
+    if(new Set([a,b,c]).size<3)continue;
+    const L=lcmN(a,b,c),ab=lcm(a,b),bc=lcm(b,c),ac=lcm(a,c);
+    if(L>maxL||ab>=L||bc>=L||ac>=L||a*b*c===L||new Set([ab,bc,ac]).size<3)continue;
+    return {a,b,c,L,ab,bc,ac};
+  }
+  return {a:4,b:6,c:10,L:60,ab:12,bc:30,ac:20};
+}
+function genThree(){
+  const d=threeData(600),{a,b,c,L}=d;
+  const cands=[
+    {t:''+d.ab,err:`Mới tìm BCNN(${a}, ${b}); chưa tính đến ${c}.`},
+    {t:''+d.bc,err:`Mới tìm BCNN(${b}, ${c}); chưa tính đến ${a}.`},
+    {t:''+d.ac,err:`Mới tìm BCNN(${a}, ${c}); chưa tính đến ${b}.`},
+    {t:''+(a*b*c),err:'Tích ba số là một bội chung nhưng chưa nhỏ nhất.'}];
+  return {stem:`BCNN(${a}, ${b}, ${c}) bằng:`,opts:[{t:''+L}].concat(pickOpts(''+L,cands)),ans:0,
+    exp:`${a} = ${facStr(fac(a))}; ${b} = ${facStr(fac(b))}; ${c} = ${facStr(fac(c))}. Lấy mỗi thừa số nguyên tố với số mũ lớn nhất: BCNN(${a}, ${b}, ${c}) = ${facStr(fac(L))} = ${L}.`};
+}
+function genVia(){
+  for(let n=0;n<300;n++){
+    const [a,b]=pairKind('gen',24,120),l=lcm(a,b),m=Math.max(a,b),s=Math.min(a,b),k=ri(2,4),good=l*k;
+    const cands=[l+m,l+s,l-m,l-s,l+1].map(x=>({t:''+x,err:why(x,a,b)+', nên không phải bội chung.'}));
+    const opts=[{t:''+good}].concat(pickOpts(''+good,shuffle(cands)));
+    if(opts.length<4)continue;
+    return {stem:`Biết BCNN(${a}, ${b}) = ${l}. Số nào sau đây là bội chung của ${a} và ${b}?`,opts,ans:0,
+      exp:`Mọi bội chung của ${a} và ${b} đều là bội của BCNN = ${l}. Vì ${good} = ${l} · ${k} nên ${good} là bội chung.`};
+  }
+  return FB_MC();
+}
+function genNotBc(){
+  for(let n=0;n<300;n++){
+    const [a,b]=pairKind('gen',24,120),l=lcm(a,b),m=Math.max(a,b),x=l+m;
+    const E=k=>({t:''+(k*l),err:k===1?`${l} là BCNN nên cũng là một bội chung.`:`${k*l} = ${k} · ${l} là bội của BCNN nên là bội chung.`});
+    return {stem:`Biết BCNN(${a}, ${b}) = ${l}. Số nào sau đây <b>không</b> là bội chung của ${a} và ${b}?`,
+      opts:[{t:''+x},E(1),E(2),E(3)],ans:0,
+      exp:`Mọi bội chung đều là bội của ${l}. ${x} = ${l} + ${m} không chia hết cho ${l}, nên không phải bội chung.`};
+  }
+  return FB_MC();
+}
+function genCnt(){
+  for(let n=0;n<300;n++){
+    const [a,b]=pairKind('gen',20,60),l=lcm(a,b),k=ri(2,5),N=k*l+ri(1,l-1),m=Math.max(a,b),s=Math.min(a,b);
+    const cands=[
+      {t:''+(k+1),err:`Đếm thừa: ${k+1} · ${l} = ${(k+1)*l} đã lớn hơn ${N}.`},
+      {t:''+(k-1),err:`Bỏ sót: ${k} · ${l} = ${k*l} vẫn nhỏ hơn ${N}.`},
+      {t:''+Math.floor(N/s),err:`Đây mới là số bội của ${s} nhỏ hơn ${N}; còn phải là bội của ${m} nữa.`},
+      {t:''+Math.floor(N/m),err:`Đây mới là số bội của ${m} nhỏ hơn ${N}; còn phải là bội của ${s} nữa.`},
+      {t:''+(k+2),err:'Đếm thừa nhiều bội chung đã vượt quá giới hạn.'}];
+    const opts=[{t:''+k}].concat(pickOpts(''+k,cands));
+    if(opts.length<4)continue;
+    const list=Array.from({length:k},(_,i)=>(i+1)*l).join(', ');
+    return {stem:`Có bao nhiêu bội chung của ${a} và ${b} nhỏ hơn ${N} (không kể số 0)?`,opts,ans:0,
+      exp:`BCNN(${a}, ${b}) = ${l}. Các bội chung khác 0 nhỏ hơn ${N} là ${list}; số tiếp theo là ${(k+1)*l} đã lớn hơn ${N}. Có ${k} số.`};
+  }
+  return FB_MC();
+}
+const CTX={
+  days:{unit:'ngày',stem:(a,b)=>`Bạn An cứ ${a} ngày trực nhật một lần, bạn Bình cứ ${b} ngày trực nhật một lần. Hôm nay cả hai cùng trực nhật. Sau ít nhất bao nhiêu ngày nữa thì hai bạn lại cùng trực nhật?`},
+  bus:{unit:'phút',stem:(a,b)=>`Hai tuyến xe buýt cùng rời bến lúc 6 giờ sáng. Tuyến 1 cứ ${a} phút có một chuyến, tuyến 2 cứ ${b} phút có một chuyến. Sau ít nhất bao nhiêu phút kể từ 6 giờ thì hai tuyến lại cùng có xe rời bến?`},
+  light:{unit:'giây',stem:(a,b)=>`Hai đèn tín hiệu cùng bật sáng một lúc. Đèn xanh cứ ${a} giây bật sáng một lần, đèn đỏ cứ ${b} giây bật sáng một lần. Sau ít nhất bao nhiêu giây thì hai đèn lại cùng bật sáng?`}
+};
+function genWord(key){return ()=>{
+  const C=CTX[key];
+  for(let n=0;n<300;n++){
+    const [a,b]=pairKind(sel(['gen','gen','mul']),30,240),l=lcm(a,b),g=gcd(a,b),m=Math.max(a,b),s=Math.min(a,b),p=a*b,u=C.unit;
+    const cands=[
+      {t:`${p} ${u}`,err:`Tích ${a} · ${b} = ${p} là một mốc cùng xảy ra nhưng không phải lần đầu tiên.`},
+      {t:`${g} ${u}`,err:`Đây là ƯCLN(${a}, ${b}); bài toán hỏi bội chung nhỏ nhất.`},
+      {t:`${m} ${u}`,err:`Chỉ là mốc của một bên; ${m} không chia hết cho ${s}.`},
+      {t:`${a+b} ${u}`,err:'Cộng hai chu kì không cho mốc cùng xảy ra.'},
+      {t:`${2*l} ${u}`,err:`${2*l} ${u} cũng là mốc chung nhưng không phải lần đầu tiên.`}];
+    const good=`${l} ${u}`,opts=[{t:good}].concat(pickOpts(good,cands));
+    if(opts.length<4)continue;
+    return {stem:C.stem(a,b),opts,ans:0,exp:`Sau một số ${u} hai sự việc cùng xảy ra thì số đó là bội chung của ${a} và ${b}. "Ít nhất" nên là BCNN: ${lcmWhy(a,b)}. Vậy sau ${l} ${u}.`};
+  }
+  return FB_MC();
+};}
+function genTime(){
+  for(let n=0;n<300;n++){
+    const [a,b]=pairKind(sel(['gen','gen','mul']),30,240),l=lcm(a,b),g=gcd(a,b),m=Math.max(a,b),p=a*b;
+    const cands=[];
+    if(p<=720)cands.push({t:timeStr(p),err:`Sau ${p} phút hai xe cũng cùng rời bến nhưng đó không phải lần tiếp theo (lần đầu là sau ${l} phút).`});
+    cands.push({t:timeStr(g),err:`Đây là ƯCLN (${g} phút), không phải BCNN.`});
+    cands.push({t:timeStr(m),err:`Mới tính mốc của một xe (sau ${m} phút).`});
+    cands.push({t:timeStr(a+b),err:'Cộng hai chu kì không cho mốc cùng rời bến.'});
+    cands.push({t:timeStr(2*l),err:`Sau ${2*l} phút hai xe cũng cùng rời bến nhưng không phải lần tiếp theo.`});
+    const good=timeStr(l),opts=[{t:good}].concat(pickOpts(good,cands));
+    if(opts.length<4)continue;
+    return {stem:`Hai xe buýt cùng rời bến lúc 6 giờ. Xe thứ nhất cứ ${a} phút rời bến một lần, xe thứ hai cứ ${b} phút rời bến một lần. Lần tiếp theo hai xe cùng rời bến vào lúc nào?`,opts,ans:0,
+      exp:`Lần tiếp theo cùng rời bến sau BCNN(${a}, ${b}) = ${l} phút, tức là lúc ${good}.`};
+  }
+  return FB_MC();
+}
+function genSq(){
+  for(let n=0;n<300;n++){
+    const [a,b]=pairKind('gen',30,300),l=lcm(a,b),g=gcd(a,b),m=Math.max(a,b),s=Math.min(a,b),p=a*b;
+    const cands=[
+      {t:`${p} cm`,err:`Hình vuông cạnh ${p} cm cũng lát được nhưng không phải nhỏ nhất.`},
+      {t:`${g} cm`,err:`Đây là ƯCLN(${a}, ${b}); cạnh phải là bội chung của hai kích thước.`},
+      {t:`${m} cm`,err:`Cạnh ${m} cm không chia hết cho ${s} nên không lát kín được.`},
+      {t:`${a+b} cm`,err:'Cạnh phải là bội chung của hai kích thước, không phải tổng.'},
+      {t:`${2*l} cm`,err:`Hình vuông cạnh ${2*l} cm lát được nhưng không phải nhỏ nhất.`}];
+    const good=`${l} cm`,opts=[{t:good}].concat(pickOpts(good,cands));
+    if(opts.length<4)continue;
+    return {stem:`Người ta xếp các viên gạch hình chữ nhật có kích thước ${a} cm × ${b} cm (đặt cùng một hướng, không cắt gạch) để lát kín một hình vuông. Cạnh của hình vuông nhỏ nhất có thể lát được dài bao nhiêu xentimét?`,opts,ans:0,
+      exp:`Cạnh hình vuông phải chia hết cho cả ${a} và ${b}; nhỏ nhất nên bằng BCNN(${a}, ${b}) = ${l} cm.`};
+  }
+  return FB_MC();
+}
+function rangeData(){
+  for(let n=0;n<500;n++){
+    const [a,b]=pairKind('gen',24,60),l=lcm(a,b);
+    if(l<8)continue;
+    const k=ri(1,6),x=k*l;
+    if(x<20||x>150)continue;
+    const r1=ri(2,l-1),r2=ri(2,l-1);
+    return {a,b,l,x,L:x-r1,U:x+r2};
+  }
+  return {a:4,b:6,l:12,x:48,L:40,U:55};
+}
+function genRange(){
+  const d=rangeData(),{a,b,l,x,L,U}=d;
+  const E=y=>({t:''+y,err:why(y,a,b)+', nên không phải bội chung.'});
+  const opts=[{t:''+x},E(x+a),E(x+b),{t:''+(x+l),err:`${x+l} là bội chung nhưng lớn hơn ${U}, nằm ngoài khoảng đã cho.`}];
+  return {stem:`Một khối học sinh khi xếp hàng ${a}, xếp hàng ${b} đều vừa đủ (không thừa, không thiếu ai). Biết số học sinh lớn hơn ${L} và nhỏ hơn ${U}. Hỏi khối có bao nhiêu học sinh?`,opts,ans:0,
+    exp:`Số học sinh là bội chung của ${a} và ${b}, tức là bội của BCNN = ${l}: ${[x-l,x,x+l].filter(v=>v>0).join(', ')}. Chỉ có ${x} nằm trong khoảng từ ${L} đến ${U}.`};
+}
+
+/* ============ Bộ sinh đúng sai ============ */
+function truths(){
+  for(let n=0;n<60;n++){const t=[0,1,2,3].map(()=>RNG()<.5),k=t.filter(Boolean).length;if(k>=1&&k<=3)return t;}
+  return [true,false,true,false];
+}
+function notBC(a,b,l){
+  const ca=[],cb=[];for(let t=2;t<=8;t++){if((a*t)%b)ca.push(a*t);if((b*t)%a)cb.push(b*t);}
+  const pool=ca.concat(cb);pool.push(l+1);return sel(pool);
+}
+function cBC(c,tr){
+  const x=tr?c.l*ri(1,4):notBC(c.a,c.b,c.l);
+  return {t:`${x} là bội chung của ${c.a} và ${c.b}.`,v:tr,topic:'bc',level:'NB',exp:tr?`${why(x,c.a,c.b)}.`:`${why(x,c.a,c.b)}, nên ${x} không là bội chung.`};
+}
+function cL(c,tr,lv){
+  const {a,b,l,g,m,s}=c,p=a*b;
+  let y=l;
+  if(!tr){
+    const pool=[p,g,m,a+b,2*l].filter(v=>v!==l);
+    y=sel(pool);
+  }
+  return {t:`BCNN(${a}, ${b}) = ${y}.`,v:tr,topic:'ts',level:lv,
+    exp:tr?lcmWhy(a,b)+'.':`Đúng là BCNN(${a}, ${b}) = ${l}. ${y%l===0?`${y} là bội chung nhưng không phải nhỏ nhất`:why(y,a,b)}.`};
+}
+function cCnt(c,tr){
+  const {a,b,l}=c,k=ri(2,5),N=k*l+ri(1,l-1),mm=tr?k:sel([k-1,k+1,k+2]);
+  const list=Array.from({length:k},(_,i)=>(i+1)*l).join(', ');
+  return {t:`Có đúng ${mm} bội chung của ${a} và ${b} nhỏ hơn ${N} (không kể số 0).`,v:tr,topic:'sy',level:'VD',
+    exp:`BCNN(${a}, ${b}) = ${l}. Các bội chung khác 0 nhỏ hơn ${N} là ${list}: có ${k} số${tr?'.':`, không phải ${mm}.`}`};
+}
+function ctxOf(a,b){return {a,b,l:lcm(a,b),g:gcd(a,b),m:Math.max(a,b),s:Math.min(a,b)};}
+function tfNum(level){return ()=>{
+  for(let n=0;n<200;n++){
+    const [a,b]=level==='NB'?pairKind(sel(['gen','gen','cop','mul']),24,120):pairKind('gen',24,60),c=ctxOf(a,b);
+    const kinds=level==='NB'?['bc','bc','bc','l']:level==='TH'?['bc','bc','l','l']:['bc','l','cnt','cnt'];
+    const tr=truths();
+    const items=kinds.map((k,i)=>k==='bc'?cBC(c,tr[i]):k==='l'?cL(c,tr[i],level==='VD'?'VD':'TH'):cCnt(c,tr[i]));
+    if(level!=='NB')items.forEach(it=>{if(it.topic==='bc')it.level='TH';});
+    if(new Set(items.map(i=>i.t)).size<4)continue;
+    return {stem:`Cho hai số a = ${a} và b = ${b}. Xét các phát biểu sau:`,items};
+  }
+  return FB_TF();
+};}
+const PROP_T=[
+  {t:'Mọi bội chung của a và b đều là bội của BCNN(a, b).',topic:'sy',level:'TH',exp:'Tập các bội chung của a và b chính là tập các bội của BCNN(a, b).'},
+  {t:'BCNN(a, b) chia hết cho cả a và b.',topic:'bc',level:'NB',exp:'BCNN(a, b) là một bội chung của a và b nên chia hết cho cả hai số.'},
+  {t:'Nếu a chia hết cho b thì BCNN(a, b) = a.',topic:'ts',level:'TH',exp:'a đã là bội của b nên a là bội chung nhỏ nhất của a và b. Ví dụ BCNN(12, 4) = 12.'},
+  {t:'Nếu a và b nguyên tố cùng nhau thì BCNN(a, b) = a · b.',topic:'ts',level:'TH',exp:'Hai số nguyên tố cùng nhau không có thừa số nguyên tố chung nên BCNN bằng tích. Ví dụ BCNN(4, 9) = 36.'},
+  {t:'BCNN(a, b) không nhỏ hơn số lớn hơn trong hai số a, b.',topic:'bc',level:'TH',exp:'BCNN(a, b) là bội của cả hai số nên không nhỏ hơn số lớn hơn.'},
+  {t:'Hai số a, b khác 0 luôn có vô số bội chung.',topic:'bc',level:'TH',exp:'Các bội của BCNN(a, b) đều là bội chung nên có vô số.'}];
+const PROP_F=[
+  {t:'BCNN(a, b) luôn bằng a · b.',topic:'ts',level:'TH',exp:'Chỉ đúng khi a, b nguyên tố cùng nhau. Ví dụ BCNN(4, 6) = 12 còn 4 · 6 = 24.'},
+  {t:'BCNN(a, b) có thể nhỏ hơn số lớn hơn trong hai số a, b.',topic:'bc',level:'TH',exp:'BCNN(a, b) là bội của cả hai số nên không thể nhỏ hơn số lớn hơn.'},
+  {t:'Hai số a, b khác 0 chỉ có đúng một bội chung.',topic:'bc',level:'NB',exp:'Mọi bội của BCNN(a, b) đều là bội chung nên có vô số bội chung.'},
+  {t:'Có bội chung khác 0 của a và b nhỏ hơn BCNN(a, b).',topic:'sy',level:'TH',exp:'BCNN(a, b) là bội chung nhỏ nhất khác 0, nên không có bội chung khác 0 nào nhỏ hơn nó.'},
+  {t:'Nếu a chia hết cho b và a khác b thì BCNN(a, b) = b.',topic:'ts',level:'TH',exp:'Khi đó a là bội của b nên BCNN(a, b) = a, không phải b. Ví dụ BCNN(12, 4) = 12.'},
+  {t:'Muốn tìm BCNN bằng phân tích ra thừa số nguyên tố, ta chỉ lấy các thừa số nguyên tố chung.',topic:'ts',level:'TH',exp:'Phải lấy cả thừa số chung và riêng, mỗi thừa số với số mũ lớn nhất.'},
+  {t:'BCNN(a, b) luôn là ước của a.',topic:'bc',level:'NB',exp:'BCNN(a, b) là bội của a, không phải ước của a (trừ khi hai số bằng nhau).'}];
+function tfProp(){
+  const nT=ri(1,3);
+  const items=shuffle(shuffle(PROP_T).slice(0,nT).map(o=>Object.assign({v:true},o)).concat(shuffle(PROP_F).slice(0,4-nT).map(o=>Object.assign({v:false},o))));
+  return {stem:'Cho a và b là hai số tự nhiên khác 0. Xét các phát biểu sau:',items};
+}
+function tfFac(){
+  const d=genFacData(),{A,B}=d,tr=truths();
+  const primes=Object.keys(d.M).map(Number).sort((x,y)=>x-y),common=Object.keys(d.Mn).map(Number).sort((x,y)=>x-y);
+  const diff=common.filter(p=>A[p]!==B[p]),p=sel(diff);
+  const lst=v=>v.join(', ');
+  const it1=tr[0]?{t:`Các thừa số nguyên tố xuất hiện trong a hoặc b là ${lst(primes)}.`,v:true,exp:`a có ${lst(Object.keys(A))}, b có ${lst(Object.keys(B))}; gộp lại là ${lst(primes)}.`}
+    :{t:`Các thừa số nguyên tố xuất hiện trong a hoặc b là ${lst(common)}.`,v:false,exp:`${lst(common)} chỉ là các thừa số chung; còn có cả thừa số riêng, tất cả là ${lst(primes)}.`};
+  const e=tr[1]?d.M[p]:Math.min(A[p],B[p]);
+  const it2={t:`Trong BCNN(a, b), thừa số ${p} có số mũ ${e}.`,v:tr[1],exp:`Số mũ của ${p} trong a là ${A[p]}, trong b là ${B[p]}; BCNN lấy số mũ lớn nhất là ${d.M[p]}${tr[1]?'.':`, không phải ${e}.`}`};
+  const wrong3=sel([d.sCo,d.sMn,d.sS]);
+  const it3=tr[2]?{t:`BCNN(a, b) = ${d.sM}.`,v:true,exp:`Lấy mọi thừa số nguyên tố với số mũ lớn nhất: ${d.sM}.`}
+    :{t:`BCNN(a, b) = ${wrong3}.`,v:false,exp:`BCNN(a, b) = ${d.sM}, không phải ${wrong3}.`};
+  const wrong4=sel([d.a*d.b,facVal(d.Co)].filter(v=>v!==d.l));
+  const it4=tr[3]?{t:`BCNN(a, b) = ${d.l}.`,v:true,exp:`${d.sM} = ${d.l}.`}
+    :{t:`BCNN(a, b) = ${wrong4}.`,v:false,exp:`BCNN(a, b) = ${d.sM} = ${d.l}, không phải ${wrong4}.`};
+  const items=[it1,it2,it3,it4].map(it=>Object.assign({topic:'ts',level:'TH'},it));
+  return {stem:`Cho a = ${facStr(A)} và b = ${facStr(B)} (đã phân tích ra thừa số nguyên tố). Xét các phát biểu sau:`,items};
+}
+function duty(x,a,b){return `Sau ${x} ngày: ${x%a===0?'An trực':'An không trực'}, ${x%b===0?'Bình trực':'Bình không trực'}.`;}
+function tfWord(){
+  for(let n=0;n<200;n++){
+    const [a,b]=pairKind('gen',20,60),c=ctxOf(a,b),{l,g,m,p}=Object.assign({p:a*b},c),tr=truths();
+    const stem=`Bạn An cứ ${a} ngày trực nhật một lần, bạn Bình cứ ${b} ngày trực nhật một lần. Hôm nay cả hai cùng trực nhật. Xét các phát biểu sau:`;
+    const y=tr[0]?l:sel([p,g,m,2*l].filter(v=>v!==l));
+    const it1={t:`Sau ít nhất ${y} ngày nữa, hai bạn lại cùng trực nhật.`,v:tr[0],level:'TH',exp:tr[0]?`Lần tiếp theo cùng trực là sau BCNN(${a}, ${b}) = ${l} ngày.`:`Lần tiếp theo cùng trực là sau BCNN(${a}, ${b}) = ${l} ngày, không phải ${y} ngày.`};
+    const x2=tr[1]?l*ri(2,3):sel([a*ri(2,6),b*ri(2,6)].filter(v=>v%l!==0).concat([l+1]));
+    const it2={t:`Sau ${x2} ngày kể từ hôm nay, hai bạn cùng trực nhật.`,v:tr[1],level:'TH',exp:duty(x2,a,b)};
+    let x3;
+    if(tr[2]){const arr=[];for(let t=2;t<=8;t++)if((a*t)%b)arr.push(a*t);x3=sel(arr);}
+    else x3=sel([l*ri(1,3),(()=>{const arr=[];for(let t=2;t<=8;t++)if((b*t)%a)arr.push(b*t);return sel(arr);})()]);
+    const it3={t:`Sau ${x3} ngày kể từ hôm nay, chỉ bạn An trực nhật (bạn Bình không trực).`,v:tr[2],level:'VD',exp:duty(x3,a,b)};
+    const k=ri(2,5),N=k*l+ri(1,l-1),mm=tr[3]?k:sel([k-1,k+1,k+2]);
+    const it4={t:`Trong ${N} ngày tới (kể từ hôm nay, không kể hôm nay), hai bạn cùng trực nhật ${mm} lần.`,v:tr[3],level:'VD',exp:`Các ngày cùng trực là bội chung khác 0 của ${a} và ${b}: ${Array.from({length:k},(_,i)=>(i+1)*l).join(', ')}. Có ${k} lần${tr[3]?'.':`, không phải ${mm}.`}`};
+    const items=[it1,it2,it3,it4].map(it=>Object.assign({topic:'tt'},it));
+    if(new Set(items.map(i=>i.t)).size<4)continue;
+    return {stem,items};
+  }
+  return FB_TF();
+}
+
+/* ============ Câu trả lời ngắn ============ */
+const SA=[
+ {id:'s_bc_nb',topic:'bc',level:'NB',unit:'',gen:()=>{const [a,b]=pairKind(sel(['gen','gen','cop','mul']),12,72),l=lcm(a,b);return{stem:`Tìm số tự nhiên nhỏ nhất khác 0 chia hết cho cả ${a} và ${b}.`,ans:[l],exp:`Đó là BCNN(${a}, ${b}). ${lcmWhy(a,b)}.`};}},
+ {id:'s_bc_th',topic:'bc',level:'TH',unit:'',gen:()=>{const [a,b]=pairKind('gen',20,100),l=lcm(a,b);return{stem:`Gọi x và y là hai bội chung nhỏ nhất khác 0 của ${a} và ${b} (x < y). Tính x + y.`,ans:[3*l],exp:`BCNN(${a}, ${b}) = ${l} nên x = ${l}, y = 2 · ${l} = ${2*l}. Vậy x + y = ${3*l}.`};}},
+ {id:'s_ts_nb',topic:'ts',level:'NB',unit:'',gen:()=>{const [a,b]=pairKind(sel(['cop','mul']),24,300),l=lcm(a,b);return{stem:`Tìm BCNN(${a}, ${b}).`,ans:[l],exp:lcmWhy(a,b)+'.'};}},
+ {id:'s_ts_th',topic:'ts',level:'TH',unit:'',gen:()=>{const d=genFacData();return{stem:`Cho a = ${facStr(d.A)} và b = ${facStr(d.B)}. Tính BCNN(a, b).`,ans:[d.l],exp:`Lấy mọi thừa số nguyên tố với số mũ lớn nhất: BCNN(a, b) = ${d.sM} = ${d.l}.`};}},
+ {id:'s_ts_th2',topic:'ts',level:'TH',unit:'',gen:()=>{const [a,b]=pairKind('gen',40,400),l=lcm(a,b);return{stem:`Tìm BCNN(${a}, ${b}).`,ans:[l],exp:lcmWhy(a,b)+'.'};}},
+ {id:'s_ts_vd',topic:'ts',level:'VD',unit:'',gen:()=>{const d=threeData(500),{a,b,c,L}=d;return{stem:`Tìm BCNN(${a}, ${b}, ${c}).`,ans:[L],exp:`${a} = ${facStr(fac(a))}; ${b} = ${facStr(fac(b))}; ${c} = ${facStr(fac(c))}. Lấy mỗi thừa số nguyên tố với số mũ lớn nhất: BCNN(${a}, ${b}, ${c}) = ${facStr(fac(L))} = ${L}.`};}},
+ {id:'s_sy_th',topic:'sy',level:'TH',unit:'',gen:()=>{const [a,b]=pairKind('gen',20,60),l=lcm(a,b),k=ri(2,5),N=k*l+ri(1,l);return{stem:`Tìm bội chung lớn nhất của ${a} và ${b} mà nhỏ hơn ${N}.`,ans:[k*l],exp:`BCNN(${a}, ${b}) = ${l}. Các bội chung là các bội của ${l}: ${k*l} < ${N} còn ${(k+1)*l} ≥ ${N}. Vậy bội chung lớn nhất nhỏ hơn ${N} là ${k*l}.`};}},
+ {id:'s_sy_vd',topic:'sy',level:'VD',unit:'',gen:()=>{const [a,b]=pairKind('gen',20,60),l=lcm(a,b),k=ri(2,6),N=k*l+ri(1,l-1);return{stem:`Có bao nhiêu bội chung của ${a} và ${b} nhỏ hơn ${N} (không kể số 0)?`,ans:[k],exp:`BCNN(${a}, ${b}) = ${l}. Các bội chung khác 0 nhỏ hơn ${N} là ${Array.from({length:k},(_,i)=>(i+1)*l).join(', ')}. Có ${k} số.`};}},
+ {id:'s_tt_th',topic:'tt',level:'TH',unit:'',gen:()=>{const key=sel(['days','bus','light']),C=CTX[key],[a,b]=pairKind(sel(['gen','gen','mul']),30,240),l=lcm(a,b);return{stem:C.stem(a,b),unit:C.unit,ans:[l],exp:`"Ít nhất" nên là BCNN: ${lcmWhy(a,b)}. Vậy sau ${l} ${C.unit}.`};}},
+ {id:'s_tt_vd1',topic:'tt',level:'VD',unit:'cm',gen:()=>{const [a,b]=pairKind('gen',30,300),l=lcm(a,b);return{stem:`Người ta xếp các viên gạch hình chữ nhật có kích thước ${a} cm × ${b} cm (đặt cùng một hướng, không cắt gạch) để lát kín một hình vuông. Tính độ dài cạnh nhỏ nhất của hình vuông đó.`,ans:[l],exp:`Cạnh hình vuông phải chia hết cho cả ${a} và ${b}; nhỏ nhất là BCNN(${a}, ${b}) = ${l} cm.`};}},
+ {id:'s_tt_vd2',topic:'tt',level:'VD',unit:'học sinh',gen:()=>{const d=rangeData();return{stem:`Một khối học sinh khi xếp hàng ${d.a}, xếp hàng ${d.b} đều vừa đủ (không thừa, không thiếu ai). Biết số học sinh lớn hơn ${d.L} và nhỏ hơn ${d.U}. Hỏi khối có bao nhiêu học sinh?`,ans:[d.x],exp:`Số học sinh là bội của BCNN(${d.a}, ${d.b}) = ${d.l}: ${[d.x-d.l,d.x,d.x+d.l].filter(v=>v>0).join(', ')}. Chỉ có ${d.x} nằm trong khoảng từ ${d.L} đến ${d.U}.`};}},
+ {id:'s_tt_vd3',topic:'tt',level:'VD',unit:'lần',gen:()=>{const [a,b]=pairKind('gen',20,60),l=lcm(a,b),k=ri(2,5),T=k*l+ri(1,l-1);return{stem:`Hai tuyến xe buýt cùng rời bến lúc 6 giờ. Tuyến 1 cứ ${a} phút, tuyến 2 cứ ${b} phút có một chuyến. Trong ${T} phút kể từ 6 giờ (không kể lúc 6 giờ), hai tuyến cùng có xe rời bến bao nhiêu lần?`,ans:[k],exp:`Các lần cùng rời bến sau ${Array.from({length:k},(_,i)=>(i+1)*l).join(', ')} phút (bội của BCNN(${a}, ${b}) = ${l}); lần kế tiếp sau ${(k+1)*l} phút đã vượt quá ${T}. Có ${k} lần.`};}}
+].map(q=>Object.assign({type:'sa'},q));
+SA.push(...SA.map(q=>Object.assign({},q,{id:q.id+'b'})));
+
+/* ============ Chủ đề ============ */
+const TOPICS={
+  bc:{short:'Bội chung',name:'Bội chung',rule:'Bội chung của hai hay nhiều số là số vừa là bội của số này vừa là bội của số kia. Tập hợp các bội chung của a và b kí hiệu là BC(a, b).',tip:'Một số là bội chung của a và b khi nó chia hết cho cả a và b. Chia hết cho một trong hai số thì chưa đủ.'},
+  ts:{short:'Tìm BCNN',name:'Tìm BCNN bằng phân tích ra thừa số nguyên tố',rule:'BCNN(a, b) là số nhỏ nhất khác 0 trong các bội chung của a và b. Để tìm BCNN: phân tích mỗi số ra thừa số nguyên tố; chọn các thừa số nguyên tố chung và riêng; mỗi thừa số lấy với số mũ lớn nhất; nhân các thừa số đã chọn.',tip:'Lấy cả thừa số chung và thừa số riêng, mỗi thừa số với số mũ lớn nhất. Lấy số mũ nhỏ nhất của thừa số chung là tìm ƯCLN. Hai số nguyên tố cùng nhau thì BCNN bằng tích; nếu số lớn chia hết cho số bé thì BCNN là số lớn.'},
+  sy:{short:'Suy ra BC',name:'Từ BCNN suy ra bội chung',rule:'Mọi bội chung của a và b đều là bội của BCNN(a, b). Muốn tìm các bội chung của a và b, ta tìm BCNN rồi nhân với 0, 1, 2, 3, ...',tip:'Các bội chung khác 0 là BCNN, 2 lần BCNN, 3 lần BCNN, ... Một số không chia hết cho BCNN thì không là bội chung.'},
+  tt:{short:'Thực tế',name:'Bài toán thực tế',rule:'Hai sự việc lặp lại sau mỗi a và b đơn vị thời gian: sau ít nhất bao lâu thì cùng xảy ra lại là BCNN(a, b). Các lần cùng xảy ra là các bội chung.',tip:'Đọc kĩ đề: "sau ít nhất" hay "nhỏ nhất" thì tìm BCNN. "Trong khoảng từ ... đến ..." thì tìm các bội chung nằm trong khoảng đó.'}
+};
+const TKEYS=['bc','ts','sy','tt'];
+const TDESC={bc:'Nhận biết bội chung, tìm bội chung của hai số',ts:'Phân tích ra thừa số nguyên tố, BCNN của hai hoặc ba số',sy:'Từ BCNN suy ra các bội chung, đếm bội chung',tt:'Lịch trực, xe buýt, lát gạch, xếp hàng'};
+const LEVELS={NB:'Nhận biết',TH:'Thông hiểu',VD:'Vận dụng'};
+const LEVEL_DESC={NB:'Nhận ra bội chung, đọc kí hiệu, tìm BCNN của các cặp số đơn giản.',TH:'Tìm BCNN, chọn đáp án qua phân tích thừa số nguyên tố, suy ra bội chung.',VD:'Bài toán thực tế và các bài nhiều bước.'};
+
+/* ============ Ngân hàng nhiều lựa chọn ============ */
+const O=(t,err)=>err?{t,err}:{t};
+const MC=[
+ {id:'m1',topic:'bc',level:'NB',stem:'Bội chung của hai số a và b là số như thế nào?',ans:0,opts:[
+   O('Số chia hết cho cả a và b'),
+   O('Số là ước của cả a và b','Đó là ước chung. Bội chung là số chia hết cho cả hai số.'),
+   O('Số là tổng của a và b','Tổng a + b chưa chắc chia hết cho a và b.'),
+   O('Số chia hết cho a hoặc chia hết cho b','Phải chia hết cho cả hai số, không phải chỉ một trong hai.')],
+  exp:'Bội chung của a và b là số vừa là bội của a vừa là bội của b, tức là chia hết cho cả a và b.'},
+ {id:'m2',topic:'bc',level:'NB',stem:'Kí hiệu nào dùng cho tập hợp các bội chung của 4 và 6?',ans:0,opts:[
+   O('BC(4, 6)'),
+   O('ƯC(4, 6)','ƯC là tập hợp các ước chung.'),
+   O('BCNN(4, 6)','BCNN là một số (bội chung nhỏ nhất), không phải tập hợp.'),
+   O('B(4, 6)','B(a) là tập hợp các bội của một số a.')],
+  exp:'Tập hợp các bội chung của 4 và 6 kí hiệu là BC(4, 6).'},
+ {id:'m3',topic:'ts',level:'NB',stem:'Khi tìm BCNN của hai số bằng cách phân tích ra thừa số nguyên tố, ta lấy những thừa số nào, với số mũ ra sao?',ans:0,opts:[
+   O('Tất cả các thừa số chung và riêng, mỗi thừa số với số mũ lớn nhất'),
+   O('Chỉ các thừa số chung, mỗi thừa số với số mũ nhỏ nhất','Đó là cách tìm ƯCLN, không phải BCNN.'),
+   O('Chỉ các thừa số chung, mỗi thừa số với số mũ lớn nhất','Còn thiếu các thừa số riêng của mỗi số.'),
+   O('Tất cả các thừa số chung và riêng, mỗi thừa số với số mũ nhỏ nhất','BCNN phải lấy số mũ lớn nhất, không phải nhỏ nhất.')],
+  exp:'BCNN lấy tất cả các thừa số nguyên tố chung và riêng, mỗi thừa số với số mũ lớn nhất.'},
+ {id:'m4',topic:'sy',level:'NB',stem:'Biết BCNN(a, b) = l. Mọi bội chung của a và b đều là bội của số nào?',ans:0,opts:[
+   O('l'),
+   O('a · b','Tích a · b là một bội chung, nhưng không phải mọi bội chung đều là bội của tích.'),
+   O('a + b','Không có quy tắc nào cho tổng a + b.'),
+   O('Số lớn hơn trong hai số a, b','Bội chung không nhất thiết là bội của riêng số lớn hơn.')],
+  exp:'Mọi bội chung của a và b đều là bội của BCNN(a, b), tức là bội của l.'},
+ {id:'m5',topic:'ts',level:'NB',stem:'Hai số tự nhiên lớn hơn 1 nguyên tố cùng nhau thì BCNN của chúng bằng:',ans:0,opts:[
+   O('Tích của hai số'),
+   O('Tổng của hai số','Không có quy tắc BCNN bằng tổng.'),
+   O('Số lớn hơn trong hai số','Số lớn hơn không chia hết cho số bé (hai số nguyên tố cùng nhau).'),
+   O('1','BCNN không thể bằng 1 nếu hai số lớn hơn 1; 1 là ƯCLN của hai số này.')],
+  exp:'Hai số nguyên tố cùng nhau không có thừa số nguyên tố chung nên BCNN bằng tích của hai số. Ví dụ BCNN(4, 9) = 36.'},
+ {id:'m6',topic:'ts',level:'NB',stem:'Nếu số lớn chia hết cho số bé thì BCNN của hai số đó bằng:',ans:0,opts:[
+   O('Số lớn'),
+   O('Số bé','Số bé là ước của số lớn, không phải bội chung nhỏ nhất.'),
+   O('Tích của hai số','Tích là một bội chung nhưng chưa nhỏ nhất, vì số lớn đã chia hết cho số bé.'),
+   O('Tổng của hai số','Không có quy tắc BCNN bằng tổng.')],
+  exp:'Số lớn đã chia hết cho số bé nên số lớn là bội chung nhỏ nhất. Ví dụ BCNN(4, 12) = 12.'},
+ {id:'m7',topic:'tt',level:'TH',stem:'Hai sự việc lặp lại theo chu kì 6 ngày và 8 ngày, hôm nay cùng xảy ra. Muốn biết sau ít nhất bao nhiêu ngày thì cùng xảy ra lại, ta cần tìm:',ans:0,opts:[
+   O('Bội chung nhỏ nhất của 6 và 8'),
+   O('Ước chung lớn nhất của 6 và 8','ƯCLN cho số lớn nhất chia hết cả hai, không cho mốc cùng xảy ra.'),
+   O('Tổng của 6 và 8','Cộng hai chu kì không cho mốc cùng xảy ra.'),
+   O('Tích của 6 và 8','Tích là một mốc chung nhưng chưa phải mốc đầu tiên.')],
+  exp:'Các mốc cùng xảy ra là bội chung của 6 và 8; "ít nhất" nên là BCNN(6, 8) = 24.'}
+].map(q=>Object.assign({type:'mc'},q));
+const addMC=(id,topic,level,gen)=>MC.push({id,type:'mc',topic,level,gen});
+['a','b','c'].forEach(x=>{
+  addMC('g_def_'+x,'bc','NB',genDef);
+  addMC('g_set_'+x,'bc','TH',genSet);
+  addMC('g_find_'+x,'ts','TH',genFind('gen'));
+  addMC('g_fac_'+x,'ts','TH',genFac);
+  addMC('g_via_'+x,'sy','NB',genVia);
+  addMC('g_notbc_'+x,'sy','TH',genNotBc);
+  addMC('g_cnt_'+x,'sy','VD',genCnt);
+  addMC('g_days_'+x,'tt','TH',genWord('days'));
+  addMC('g_range_'+x,'tt','VD',genRange);
+});
+['a','b'].forEach(x=>{
+  addMC('g_cop_'+x,'ts','NB',genFind('cop'));
+  addMC('g_mul_'+x,'ts','NB',genFind('mul'));
+  addMC('g_three_'+x,'ts','VD',genThree);
+  addMC('g_bus_'+x,'tt','TH',genWord('bus'));
+  addMC('g_time_'+x,'tt','VD',genTime);
+  addMC('g_sq_'+x,'tt','VD',genSq);
+});
+addMC('g_light_a','tt','TH',genWord('light'));
+
+const TF=[];
+const addTF=(id,topic,level,gen)=>TF.push({id,type:'tf',topic,level,gen});
+['a','b'].forEach(x=>{
+  addTF('tf_num_nb_'+x,'bc','NB',tfNum('NB'));
+  addTF('tf_num_th_'+x,'bc','TH',tfNum('TH'));
+  addTF('tf_num_vd_'+x,'sy','VD',tfNum('VD'));
+  addTF('tf_word_'+x,'tt','VD',tfWord);
+});
+['a','b','c'].forEach(x=>{
+  addTF('tf_prop_'+x,'sy','TH',tfProp);
+  addTF('tf_fac_'+x,'ts','TH',tfFac);
+});
+
+const BANK={mc:MC,tf:TF,sa:SA};
+const TF_SCORE=[0,0.1,0.25,0.5,1];
+const TYPES=['mc','tf','sa'];
+
+/* ============ Hình: dải các bội ============ */
+function mstrip(a,b,N){
+  const row=k=>{let s='';for(let x=k;x<=N;x+=k)s+=`<i class="${x%a===0&&x%b===0?'c':''}">${x}</i>`;return s;};
+  const common=[];for(let x=1;x<=N;x++)if(x%a===0&&x%b===0)common.push(x);
+  return `<div class="figbox ms" role="img" aria-label="Các bội của ${a} và ${b} đến ${N}. Bội chung là ${common.join(', ')}"><div class="r"><b>B(${a})</b>${row(a)}</div><div class="r"><b>B(${b})</b>${row(b)}</div><div class="small muted">Các số đậm, màu đỏ là bội chung: ${common.join(', ')}.</div></div>`;
+}
+const RECAP=[
+  {k:'bc',fig:mstrip(4,6,36),extra:'BC(4, 6) gồm 0, 12, 24, 36, ...'},
+  {k:'ts',fig:'<div class="figbox"><p>12 = 2<sup>2</sup> · 3</p><p>18 = 2 · 3<sup>2</sup></p><p>BCNN(12, 18) = 2<sup>2</sup> · 3<sup>2</sup> = 36</p></div>',extra:'Thừa số 2 lấy số mũ 2, thừa số 3 lấy số mũ 2.'},
+  {k:'sy',fig:'<div class="figbox"><p>BCNN(4, 6) = 12</p><p>BC(4, 6) = {0; 12; 24; 36; ...}</p></div>',extra:'Các bội chung chính là các bội của 12.'},
+  {k:'tt',fig:'<div class="figbox"><p>Trực nhật cứ 4 ngày và cứ 6 ngày một lần.</p><p>BCNN(4, 6) = 12: sau 12 ngày lại cùng trực.</p></div>',extra:'"Ít nhất" nghĩa là tìm bội chung nhỏ nhất.'}
+];
+
+/* ============ Trạng thái ============ */
+const state={view:'home',name:'',ans:{},pr:{},perm:{},result:null,topicPct:{},weak:[],t0:0,elapsed:0,timedOut:false,code:'',cls:''};
+const LIMIT={test:25*60,quick:5*60};
+const SEEN_KEY='bc6_seen';
+function fmtTime(s){s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+let tick=null;
+function stopTimer(){if(tick){clearInterval(tick);tick=null;}}
+function updateTimer(){
+  if(state.view!=='quiz'||!S)return;
+  const el=document.getElementById('timer'),used=Math.floor((Date.now()-state.t0)/1000);
+  if(S.mode!=='practice'){
+    const lim=LIMIT[S.mode],left=lim-used;
+    if(el){el.textContent='Còn '+fmtTime(left);el.classList.toggle('low',left<=Math.min(300,lim*0.2));}
+    if(left<=0){state.timedOut=true;finish(true);}
+  }else if(el)el.textContent='Đã dùng '+fmtTime(used);
+}
+function startTimer(){stopTimer();updateTimer();if(state.view==='quiz')tick=setInterval(updateTimer,1000);}
+let S=null;
+const $app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>{const s=n.toFixed(2).replace(/\.?0+$/,'');return s.replace('.',',');};
+function status(p){return p>=80?['good','Thành thạo']:p>=50?['warn','Cần củng cố']:['bad','Cần học lại'];}
+function inst(q){return q.gen?Object.assign({},q,q.gen()):q;}
+let seen={};try{seen=JSON.parse(localStorage.getItem(SEEN_KEY)||'{}')||{};}catch(e){seen={};}
+function markSeen(list){list.forEach(q=>{seen[q.id]=(seen[q.id]||0)+1;});try{localStorage.setItem(SEEN_KEY,JSON.stringify(seen));}catch(e){}}
+function ordered(pool){if(SEEDED)return shuffle(pool);const w=q=>(seen[q.id]||0)*(q.gen?0.25:1);return shuffle(pool).sort((a,b)=>w(a)-w(b));}
+
+/* ============ Dựng phiên làm bài ============ */
+function pick(pool,used){
+  const x=ordered(pool.filter(x=>!used.has(x.id)))[0];used.add(x.id);return x;
+}
+function makeSession(mode,spec,title,by){
+  const list=[];TYPES.forEach(t=>by[t]=by[t].map(inst));
+  TYPES.forEach(t=>by[t].forEach(q=>list.push(q)));
+  const idx={};TYPES.forEach(t=>by[t].forEach((q,i)=>idx[q.id]=i));
+  state.ans={};state.pr={};state.result=null;state.perm={};
+  state.t0=Date.now();state.elapsed=0;state.timedOut=false;if(!SEEDED)markSeen(list);
+  {const keep=RNG;RNG=Math.random;by.mc.forEach(q=>{state.perm[q.id]=shuffle(q.opts.map((_,i)=>i));});RNG=keep;}
+  S={mode,spec,title,by,list,idx};
+}
+function buildTest(){
+  const used=new Set();
+  const mcSlots=[['bc',['NB']],['ts',['NB']],['ts',['TH']],['sy',['NB','TH']],['tt',['TH','VD']],[null,['VD']]];
+  const mc=mcSlots.map(([t,l])=>pick(MC.filter(q=>(!t||q.topic===t)&&l.includes(q.level)),used));
+  const tf=['bc','ts','sy'].map(t=>pick(TF.filter(q=>q.topic===t&&q.level!=='NB'),used));
+  const sa=TKEYS.map(t=>pick(SA.filter(q=>q.topic===t&&q.level!=='NB'),used));
+  makeSession('test',null,'Bài kiểm tra',{mc,tf,sa});
+}
+function buildQuick(){
+  const used=new Set();
+  const mc=[
+    pick(MC.filter(q=>q.topic==='ts'&&q.level==='NB'),used),
+    pick(MC.filter(q=>q.topic==='ts'&&q.level==='TH'),used),
+    pick(MC.filter(q=>q.topic==='sy'&&q.level!=='VD'),used),
+    pick(MC.filter(q=>q.topic==='tt'&&q.level==='TH'),used)
+  ];
+  const sa=[pick(SA.filter(q=>q.topic==='ts'&&q.level!=='VD'),used),pick(SA.filter(q=>q.topic==='tt'&&q.level==='TH'),used)];
+  makeSession('quick',null,'Kiểm tra nhanh',{mc,tf:[],sa});
+}
+function buildPractice(spec){
+  let f,title;
+  if(spec.kind==='level'){f=q=>q.level===spec.val;title='Gói '+LEVELS[spec.val];}
+  else if(spec.kind==='topic'){f=q=>q.topic===spec.val;title='Gói '+TOPICS[spec.val].short;}
+  else{f=q=>spec.topics.includes(q.topic);title='Gói ôn điểm yếu';}
+  const nSA=spec.kind==='topic'?4:3;
+  const take=(arr,n)=>ordered(arr.filter(f)).slice(0,n);
+  makeSession('practice',spec,title,{mc:take(MC,6),tf:take(TF,2),sa:take(SA,nSA)});
+}
+
+/* ============ Màn hình: trang chủ ============ */
+function homeHTML(){
+  const weak=state.weak;
+  return `
+  <section class="hero">
+    <h1>Bội chung <em>nhỏ nhất</em></h1>
+    <p class="lead">Luyện bội chung và bội chung nhỏ nhất: tìm BCNN bằng phân tích ra thừa số nguyên tố, suy ra các bội chung và giải bài toán thực tế. Chọn một gói luyện tập, hoặc làm bài kiểm tra để lấy điểm.</p>
+    ${mstrip(4,6,36)}
+  </section>
+
+  <section class="card stack" style="margin-top:22px">
+    <div>
+      <h2>Luyện tập</h2>
+      <p class="muted" style="margin:6px 0 0">Mỗi gói có khoảng 11 câu rút ngẫu nhiên từ ngân hàng ${MC.length+TF.length+SA.length} câu, nhiều câu tự đổi số liệu mỗi lần làm. Làm xong từng câu bấm Kiểm tra để xem lời giải ngay. Nếu chưa đúng, bạn được thử lại một lần. Không giới hạn thời gian, trang chỉ hiện thời gian bạn đã dùng.</p>
+    </div>
+    <div>
+      <div class="grp">Theo mức độ</div>
+      <div class="pack">${Object.keys(LEVELS).map(k=>`<button class="pk" data-pack="level:${k}"><b>${LEVELS[k]}</b><span>${LEVEL_DESC[k]}</span></button>`).join('')}</div>
+      <div class="grp">Theo nội dung</div>
+      <div class="pack">${TKEYS.map(k=>`<button class="pk" data-pack="topic:${k}"><b>${TOPICS[k].name}</b><span>${TDESC[k]}</span></button>`).join('')}</div>
+      <div class="grp">Gợi ý cho bạn</div>
+      <div class="pack"><button class="pk" data-pack="weak" ${weak.length?'':'disabled'}><b>Gói ôn điểm yếu</b><span>${weak.length?'Các câu thuộc phần bạn còn dưới 80%: '+weak.map(k=>TOPICS[k].short).join(', ')+'.':'Xuất hiện sau khi bạn làm xong một gói hoặc một bài kiểm tra.'}</span></button></div>
+    </div>
+  </section>
+
+  <section class="card stack" style="margin-top:16px">
+    <div>
+      <h2>Kiểm tra</h2>
+      <p class="muted" style="margin:6px 0 0">Có hai bài. Kết quả chỉ hiện sau khi nộp bài, và hết giờ trang tự nộp.</p>
+    </div>
+    <div class="recap">
+      <div class="card"><h3>Bài kiểm tra 25 phút</h3><p>13 câu, 10 điểm: 6 câu nhiều lựa chọn, 3 câu đúng sai (mỗi câu 4 ý) và 4 câu trả lời ngắn.</p></div>
+      <div class="card"><h3>Kiểm tra nhanh 5 phút</h3><p>6 câu, 10 điểm: 4 câu nhiều lựa chọn và 2 câu trả lời ngắn. Hợp để kiểm tra ngay sau khi học xong một phần.</p></div>
+    </div>
+    <div>
+      <label class="fl" for="nm">Họ và tên</label>
+      <input type="text" id="nm" autocomplete="name" placeholder="Ví dụ: Nguyễn Văn An" value="${esc(state.name)}">
+    </div>
+    <div>
+      <label class="fl" for="cls">Lớp (bắt buộc khi làm bài kiểm tra)</label>
+      <input type="text" id="cls" autocomplete="off" placeholder="Ví dụ: 6A1" maxlength="8" value="${esc(state.cls)}">
+      <p class="small muted" id="clserr" role="alert" style="margin:6px 0 0;color:var(--bad,#b3261e)"></p>
+    </div>
+    <div>
+      <label class="fl" for="mcode">Mã đề (không bắt buộc)</label>
+      <input type="text" id="mcode" autocomplete="off" placeholder="Ví dụ: 6A-01" value="${esc(state.code)}">
+      <p class="small muted" style="margin:6px 0 0">Nếu giáo viên cho mã đề, hãy nhập đúng mã đó: các bạn nhập cùng mã sẽ làm cùng một đề. Để trống thì bạn nhận một đề ngẫu nhiên. Thứ tự đáp án A, B, C, D vẫn được xáo riêng cho từng bạn.</p>
+    </div>
+    <div class="row"><button class="btn" id="start">Bắt đầu bài 25 phút</button><button class="btn" id="startq">Bắt đầu kiểm tra nhanh 5 phút</button></div>
+    <p class="small muted" style="margin:0">Đồng hồ bắt đầu chạy khi bạn bấm nút.</p>
+  </section>
+
+  <section style="margin-top:28px">
+    <h2 style="margin-bottom:12px">Ôn nhanh kiến thức</h2>
+    <div class="recap">
+      ${RECAP.map(r=>`<div class="card"><h3>${TOPICS[r.k].name}</h3>${r.fig}<p>${TOPICS[r.k].rule}</p><p class="muted small">${r.extra}</p></div>`).join('')}
+    </div>
+  </section>`;
+}
+
+/* ============ Thẻ câu hỏi ============ */
+const PART_NAME={mc:'Phần I',tf:'Phần II',sa:'Phần III'},PART_QUICK={mc:'Phần I',sa:'Phần II'};
+const partName=t=>S.mode==='quick'?PART_QUICK[t]:PART_NAME[t];
+const TYPE_NAME={mc:'Nhiều lựa chọn',tf:'Đúng sai',sa:'Trả lời ngắn'};
+function lbl(t,i,j){
+  const base=S.mode!=='practice'?`${partName(t)}, câu ${i+1}`:`${TYPE_NAME[t]}, câu ${i+1}`;
+  return j==null?base:`${base}, ý ${'abcd'[j]}`;
+}
+function badge(P){
+  if(P.first&&P.first.every(Boolean))return '<span class="st good">Đúng ngay lần đầu</span>';
+  if(P.final)return '<span class="st warn">Đúng ở lần thứ hai</span>';
+  return '<span class="st bad">Chưa đúng</span>';
+}
+function tail(q,P){
+  let h=`<div class="feedbox">${P.msg?`<div class="feed ${P.cls}" role="status">${P.msg}</div>`:''}</div>`;
+  if(P.done){
+    if(q.type==='mc')h+=`<p class="ans-line">Đáp án đúng: <b>${q.opts[q.ans].t}</b></p><div class="exp">${q.exp}</div>`;
+    else if(q.type==='sa')h+=`<p class="ans-line">Đáp án đúng: <b>${q.ans[0]} ${q.unit}</b></p><div class="exp">${q.exp}</div>`;
+  }else h+=`<div class="row" style="margin-top:12px"><button class="btn sm chk" data-q="${q.id}">Kiểm tra</button></div>`;
+  return h;
+}
+function mcHTML(q,i){
+  const pr=S.mode==='practice',P=pr?(state.pr[q.id]||{}):{},done=!!P.done,tried=P.tried||[],cur=state.ans[q.id];
+  const opts=state.perm[q.id].map((oi,j)=>{
+    let cls='opt',dis='';
+    if(pr){
+      if(done){dis='disabled';if(oi===q.ans)cls+=' is-right';else if(cur===oi)cls+=' is-wrong';}
+      else if(tried.includes(oi)){dis='disabled';cls+=' is-wrong';}
+    }
+    return `<label class="${cls}"><input type="radio" name="${q.id}" value="${oi}" ${cur===oi?'checked':''} ${dis}><span class="ol">${'ABCD'[j]}</span><span>${q.opts[oi].t}</span></label>`;
+  }).join('');
+  return `<article class="card q" id="q-${q.id}"><div class="qh"><span class="qn">Câu ${i+1}</span>${pr&&done?badge(P):''}</div>
+    <p class="stem">${q.stem}</p>${q.fig||''}
+    <div class="opts" role="radiogroup" aria-label="Câu ${i+1}">${opts}</div>${pr?tail(q,P):''}</article>`;
+}
+function tfHTML(q,i){
+  const pr=S.mode==='practice',P=pr?(state.pr[q.id]||{}):{},done=!!P.done,a=state.ans[q.id]||[];
+  const rows=q.items.map((it,j)=>{
+    const cls=v=>{let c='opt';if(done){if(it.v===v)c+=' is-right';else if(a[j]===v)c+=' is-wrong';}return c;};
+    const dis=done?'disabled':'';
+    return `<div class="tfr"><div class="tx">${q.items.length>1?`<b>${'abcd'[j]})</b>`:''}${it.t}</div>
+      <div class="tfb" role="radiogroup" aria-label="Câu ${i+1}, ý ${'abcd'[j]}">
+        <label class="${cls(true)}"><input type="radio" name="${q.id}-${j}" value="1" ${a[j]===true?'checked':''} ${dis}><span>Đúng</span></label>
+        <label class="${cls(false)}"><input type="radio" name="${q.id}-${j}" value="0" ${a[j]===false?'checked':''} ${dis}><span>Sai</span></label>
+      </div>${done?`<div class="exp"><b>Đáp án: ${it.v?'Đúng':'Sai'}.</b> ${it.exp}</div>`:''}</div>`;
+  }).join('');
+  return `<article class="card q" id="q-${q.id}"><div class="qh"><span class="qn">Câu ${i+1}</span>${pr&&done?badge(P):''}</div>
+    <p class="stem">${q.stem}</p>${q.fig||''}<div class="tf">${rows}</div>${pr?tail(q,P):''}</article>`;
+}
+function saHTML(q,i){
+  const pr=S.mode==='practice',P=pr?(state.pr[q.id]||{}):{},done=!!P.done;
+  return `<article class="card q" id="q-${q.id}"><div class="qh"><span class="qn">Câu ${i+1}</span>${pr&&done?badge(P):''}</div>
+    <p class="stem">${q.stem}</p>${q.fig||''}
+    <div class="sa"><label class="fl" for="in-${q.id}" style="margin:0">Đáp án:</label>
+    <input type="text" id="in-${q.id}" data-sa="${q.id}" inputmode="decimal" autocomplete="off" placeholder="Nhập số" value="${esc(state.ans[q.id]||'')}" ${done?'disabled':''}>
+    <span class="muted">${q.unit}</span></div>${pr?tail(q,P):''}</article>`;
+}
+const CARD={mc:mcHTML,tf:tfHTML,sa:saHTML};
+
+/* ============ Màn hình: làm bài ============ */
+function partHead(k,t,d){return `<div class="part">${k?`<div class="kicker">${k}</div>`:''}<h2>${t}</h2><p>${d}</p></div>`;}
+function quizHTML(){
+  const test=S.mode!=='practice',quick=S.mode==='quick';
+  const desc={
+    mc:test?(quick?'Mỗi câu chỉ có một đáp án đúng. 1,25 điểm mỗi câu.':'Mỗi câu chỉ có một đáp án đúng. 0,5 điểm mỗi câu.'):'Chọn một đáp án rồi bấm Kiểm tra.',
+    tf:test?'Mỗi câu có 4 ý, chọn Đúng hoặc Sai cho từng ý. Đúng 1 ý được 0,1 điểm, 2 ý được 0,25, 3 ý được 0,5, cả 4 ý được 1 điểm.':'Chọn Đúng hoặc Sai cho cả 4 ý rồi bấm Kiểm tra.',
+    sa:test?(quick?'Nhập kết quả là một số. Có thể dùng dấu phẩy hoặc dấu chấm. 2,5 điểm mỗi câu.':'Nhập kết quả là một số. Có thể dùng dấu phẩy hoặc dấu chấm. 1 điểm mỗi câu.'):'Nhập kết quả là một số rồi bấm Kiểm tra.'
+  };
+  const heads={mc:['Phần I','Câu hỏi nhiều lựa chọn'],tf:['Phần II','Câu hỏi đúng sai'],sa:[quick?'Phần II':'Phần III','Câu hỏi trả lời ngắn']};
+  let body='';
+  TYPES.forEach(t=>{
+    if(!S.by[t].length)return;
+    body+=partHead(test?heads[t][0]:'',test?heads[t][1]:TYPE_NAME[t],desc[t]);
+    body+=`<div class="stack">${S.by[t].map(CARD[t]).join('')}</div>`;
+  });
+  return `<div class="bar-sticky"><div class="row" style="justify-content:space-between"><b id="plabel"></b><span class="small muted">${test?esc(state.name||'Học sinh'):S.title}</span><b id="timer" class="timer"></b></div><div class="prog"><i id="pbar"></i></div></div>
+  ${body}
+  <div id="warn"></div>
+  <div class="row" style="margin-top:22px"><button class="btn" id="submit">${test?'Nộp bài':'Xem kết quả'}</button><button class="btn ghost" id="back">Quay lại</button></div>`;
+}
+function totalItems(){return S.list.reduce((s,q)=>s+(q.type==='tf'?q.items.length:1),0);}
+function answered(){
+  let n=0;
+  S.by.mc.forEach(q=>{if(state.ans[q.id]!=null)n++;});
+  S.by.tf.forEach(q=>{const a=state.ans[q.id]||[];q.items.forEach((_,j)=>{if(typeof a[j]==='boolean')n++;});});
+  S.by.sa.forEach(q=>{if(String(state.ans[q.id]||'').trim()!=='')n++;});
+  return n;
+}
+function doneCount(){return S.list.filter(q=>state.pr[q.id]&&state.pr[q.id].done).length;}
+function updateProgress(){
+  const l=document.getElementById('plabel'),b=document.getElementById('pbar');if(!l)return;
+  if(S.mode!=='practice'){const n=answered(),t=totalItems();l.textContent=`Đã trả lời ${n}/${t}`;b.style.width=(100*n/t)+'%';}
+  else{const n=doneCount(),t=S.list.length;l.textContent=`Đã hoàn thành ${n}/${t} câu`;b.style.width=(100*n/t)+'%';}
+}
+
+/* ============ Chấm điểm ============ */
+function parseNum(s){
+  s=String(s).trim();
+  if(/^\d{1,3}([.\s]\d{3})+$/.test(s))s=s.replace(/[.\s]/g,'');
+  s=s.replace(/,/g,'.').replace(/[^0-9.\-\/]/g,'');
+  if(!s)return NaN;
+  if(s.includes('/')){const [a,b]=s.split('/');return parseFloat(a)/parseFloat(b);}
+  return parseFloat(s);
+}
+function evalQ(q,a){
+  if(q.type==='mc')return [a===q.ans];
+  if(q.type==='tf'){a=a||[];return q.items.map((it,j)=>a[j]===it.v);}
+  const v=parseNum(a==null?'':a);
+  return [!isNaN(v)&&q.ans.some(x=>Math.abs(x-v)<1e-6)];
+}
+function grade(){
+  const test=S.mode!=='practice',quick=S.mode==='quick';
+  const items=[],sc={mc:0,tf:0,sa:0},errs=[],qres=[];
+  const ansOf=q=>test?state.ans[q.id]:(state.pr[q.id]&&state.pr[q.id].firstAns);
+  const oksOf=q=>{
+    if(test)return evalQ(q,ansOf(q));
+    const P=state.pr[q.id];return P&&P.first?P.first:Array(q.type==='tf'?q.items.length:1).fill(false);
+  };
+  S.by.mc.forEach((q,i)=>{
+    const a=ansOf(q),ok=oksOf(q)[0];
+    if(ok)sc.mc+=quick?1.25:0.5;else if(a!=null&&q.opts[a]&&q.opts[a].err)errs.push({where:lbl('mc',i),topic:q.topic,text:q.opts[a].err});
+    items.push({topic:q.topic,level:q.level,ok,label:lbl('mc',i)});
+    qres.push({kind:'mc',q,i,a,ok,pts:ok?(quick?1.25:0.5):0,max:quick?1.25:0.5});
+  });
+  S.by.tf.forEach((q,i)=>{
+    const a=ansOf(q)||[],oks=oksOf(q);let k=0;
+    q.items.forEach((it,j)=>{
+      const ok=oks[j];if(ok)k++;
+      items.push({topic:it.topic,level:it.level,ok,label:lbl('tf',i,q.items.length>1?j:null)});
+      if(!ok&&typeof a[j]==='boolean')errs.push({where:lbl('tf',i,q.items.length>1?j:null),topic:it.topic,text:it.exp});
+    });
+    const pts=quick?(k?1.25:0):TF_SCORE[k];sc.tf+=pts;
+    qres.push({kind:'tf',q,i,a,oks,k,pts,max:quick?1.25:1});
+  });
+  S.by.sa.forEach((q,i)=>{
+    const raw=ansOf(q)||'',ok=oksOf(q)[0];
+    if(ok)sc.sa+=quick?2.5:1;
+    items.push({topic:q.topic,level:q.level,ok,label:lbl('sa',i)});
+    qres.push({kind:'sa',q,i,raw,ok,pts:ok?(quick?2.5:1):0,max:quick?2.5:1});
+  });
+  const topics={};TKEYS.forEach(k=>topics[k]={c:0,n:0});
+  const levels={NB:{c:0,n:0},TH:{c:0,n:0},VD:{c:0,n:0}};
+  items.forEach(it=>{topics[it.topic].n++;levels[it.level].n++;if(it.ok){topics[it.topic].c++;levels[it.level].c++;}});
+  const total=Math.round((sc.mc+sc.tf+sc.sa)*100)/100;
+  return {items,sc,total,topics,levels,errs,qres};
+}
+function pct(o){return o.n?Math.round(100*o.c/o.n):0;}
+function updateWeak(r){
+  TKEYS.forEach(k=>{if(r.topics[k].n)state.topicPct[k]=pct(r.topics[k]);});
+  state.weak=TKEYS.filter(k=>state.topicPct[k]!==undefined&&state.topicPct[k]<80).sort((a,b)=>state.topicPct[a]-state.topicPct[b]);
+}
+
+/* ============ Luyện tập: kiểm tra từng câu ============ */
+function setFeed(id,msg,cls){
+  const box=document.querySelector(`#q-${id} .feedbox`);
+  if(box)box.innerHTML=`<div class="feed ${cls}" role="status">${msg}</div>`;
+}
+function practiceCheck(id){
+  const q=S.list.find(x=>x.id===id);if(!q)return;
+  const P=state.pr[id]||(state.pr[id]={attempts:0,done:false,tried:[]});
+  if(P.done)return;
+  const a=state.ans[id];
+  if(q.type==='mc'&&a==null)return setFeed(id,'Hãy chọn một đáp án trước.','info');
+  if(q.type==='tf'){const arr=a||[];if(q.items.some((_,j)=>typeof arr[j]!=='boolean'))return setFeed(id,'Hãy chọn Đúng hoặc Sai cho cả 4 ý trước.','info');}
+  if(q.type==='sa'&&String(a||'').trim()==='')return setFeed(id,'Hãy nhập đáp án trước.','info');
+  P.attempts++;
+  const oks=evalQ(q,a),all=oks.every(Boolean);
+  if(P.attempts===1){P.first=oks;P.firstAns=JSON.parse(JSON.stringify(a));}
+  if(all){
+    P.done=true;P.final=true;P.cls='ok';
+    P.msg=P.attempts===1?'Đúng rồi!':'Đúng ở lần thử thứ hai.';
+  }else if(P.attempts===1){
+    P.cls='bad';
+    if(q.type==='mc'){
+      const e=q.opts[a].err;P.tried.push(a);delete state.ans[id];
+      P.msg='Chưa đúng.'+(e?' '+e:'')+' Hãy chọn lại một đáp án khác.';
+    }else if(q.type==='tf'){
+      const k=oks.filter(Boolean).length;P.msg=`Mới đúng ${k}/${q.items.length} ý. Hãy xem lại các ý và thử một lần nữa.`;
+    }else P.msg='Đáp án chưa đúng. Hãy kiểm tra lại cách tính và thử một lần nữa.';
+  }else{
+    P.done=true;P.final=false;P.cls='bad';P.msg='Chưa đúng. Đáp án và lời giải ở bên dưới.';
+  }
+  const el=document.getElementById('q-'+id);
+  el.outerHTML=CARD[q.type](q,S.idx[id]);
+  updateProgress();
+}
+
+/* ============ Màn hình: kết quả ============ */
+function barRow(label,o){
+  const p=pct(o),[cls,txt]=status(p);
+  return `<div class="topic"><div class="trow"><b>${label}</b><span class="st ${cls}">${txt} · ${p}%</span></div>
+    <div class="track" role="img" aria-label="${label}: ${p}%"><i class="fill-${cls}" style="width:${p}%"></i></div>
+    <div class="small muted">${o.c}/${o.n} ý đúng</div></div>`;
+}
+const SHEET_URL=''; // địa chỉ Google Apps Script (kết thúc bằng /exec); để trống thì chỉ dùng mã gửi tay
+const CODE_PREFIX='BC6-';
+function makeCode(r){
+  const t={};TKEYS.forEach(k=>t[k]=[r.topics[k].c,r.topics[k].n]);
+  const o={v:1,l:'bcnn6',n:state.name||'Học sinh',d:new Date().toISOString().slice(0,10),s:r.total,m:state.elapsed,L:LIMIT[S.mode],q:S.mode,k:state.code,p:[r.sc.mc,r.sc.tf,r.sc.sa],t,c:state.cls};
+  return CODE_PREFIX+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+}
+function setSent(msg,retry){
+  const m=document.getElementById('sent');if(!m)return;
+  m.innerHTML=msg+(retry?' <button class="btn sm ghost" id="resend">Gửi lại</button>':'');
+}
+function sendResult(){
+  if(!SHEET_URL||!state.result)return;
+  const code=makeCode(state.result);
+  setSent('Đang gửi kết quả cho giáo viên...');
+  fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({code})})
+    .then(()=>{state.sentCode=code;setSent('Đã gửi kết quả cho giáo viên.');})
+    .catch(()=>setSent('Chưa gửi được (có thể mất mạng). Bấm Gửi lại, hoặc gửi mã bên dưới cho giáo viên.',true));
+}
+function reviewHTML(r){
+  const sym=ok=>ok?'<span class="mark-ok">✓ Đúng</span>':'<span class="mark-no">✗ Chưa đúng</span>';
+  return r.qres.map(x=>{
+    const tp=x.kind==='tf'?'':TOPICS[x.q.topic].short;
+    let body='';const head=`${partName(x.kind)} · Câu ${x.i+1}`;
+    if(x.kind==='mc'){
+      const chosen=x.a==null?'Chưa trả lời':x.q.opts[x.a].t,right=x.q.opts[x.q.ans].t;
+      body=`<p class="stem">${x.q.stem}</p>${x.q.fig||''}<p class="ans-line">Bạn chọn: <b>${chosen}</b></p><p class="ans-line">Đáp án đúng: <b>${right}</b></p>`+(x.ok||x.a==null||!x.q.opts[x.a].err?'':`<p class="ans-line mark-no">Lỗi thường gặp: ${x.q.opts[x.a].err}</p>`)+`<div class="exp">${x.q.exp}</div>`;
+    }else if(x.kind==='tf'){
+      body=`<p class="stem">${x.q.stem}</p>${x.q.fig||''}`+x.q.items.map((it,j)=>{
+        const a=x.a[j],your=typeof a==='boolean'?(a?'Đúng':'Sai'):'Chưa chọn';
+        return `<div class="exp" style="margin-top:8px">${x.q.items.length>1?`<b>${'abcd'[j]})</b> `:''}${it.t}<br>Bạn chọn: <b>${your}</b> · Đáp án: <b>${it.v?'Đúng':'Sai'}</b> ${sym(x.oks[j])} <span class="chip">${TOPICS[it.topic].short}</span><br><span class="muted">${it.exp}</span></div>`;
+      }).join('');
+    }else{
+      body=`<p class="stem">${x.q.stem}</p>${x.q.fig||''}<p class="ans-line">Bạn nhập: <b>${x.raw?esc(x.raw):'Chưa trả lời'}</b></p><p class="ans-line">Đáp án đúng: <b>${x.q.ans[0]} ${x.q.unit}</b></p><div class="exp">${x.q.exp}</div>`;
+    }
+    const right=x.kind==='tf'?`${x.k}/${x.q.items.length} ý đúng · ${fmt(x.pts)}/${fmt(x.max)} điểm`:`${sym(x.ok)} · ${fmt(x.pts)}/${fmt(x.max)} điểm`;
+    return `<details class="rv"><summary><span><b>${head}</b> ${tp?`<span class="chip">${tp}</span>`:''}</span><span class="small">${right}</span></summary><div class="body">${body}</div></details>`;
+  }).join('');
+}
+function resultHTML(){
+  const r=state.result,test=S.mode!=='practice',quick=S.mode==='quick',ts=TKEYS.filter(k=>r.topics[k].n).map(k=>({k,p:pct(r.topics[k])}));
+  const weak=ts.filter(t=>t.p<80).sort((a,b)=>a.p-b.p),strong=ts.filter(t=>t.p>=80);
+  let comment;
+  if(!weak.length)comment=ts.length>1?'Bạn nắm vững cả bốn nội dung. Có thể chuyển sang các bài toán thực tế nhiều bước hơn.':'Bạn nắm vững nội dung này. Hãy thử gói của nội dung hoặc mức độ khác.';
+  else{
+    comment=`Phần cần ưu tiên ôn trước: <b>${TOPICS[weak[0].k].name}</b> (${weak[0].p}%).`;
+    if(strong.length)comment+=` Bạn làm tốt phần ${strong.map(t=>'<b>'+TOPICS[t.k].short+'</b>').join(', ')}.`;
+  }
+  const missed=k=>r.items.filter(it=>it.topic===k&&!it.ok).map(it=>it.label);
+  const correct=r.items.filter(it=>it.ok).length;
+  const head=test
+    ?`<div class="big">${fmt(r.total)}<small> / 10</small></div><div><div class="muted small" style="margin-bottom:6px">${esc(state.name||'Học sinh')}${state.cls?' · Lớp '+esc(state.cls):''}${quick?' · Kiểm tra nhanh':''}${state.code?' · Mã đề '+esc(state.code):''}</div><div class="parts">${quick?`<span class="chip">Phần I: ${fmt(r.sc.mc)}/5</span><span class="chip">Phần II: ${fmt(r.sc.sa)}/5</span>`:`<span class="chip">Phần I: ${fmt(r.sc.mc)}/3</span><span class="chip">Phần II: ${fmt(r.sc.tf)}/3</span><span class="chip">Phần III: ${fmt(r.sc.sa)}/4</span>`}<span class="chip">Thời gian: ${fmtTime(state.elapsed)}</span></div></div>`
+    :`<div class="big">${correct}<small> / ${r.items.length}</small></div><div><div class="muted small" style="margin-bottom:6px">${S.title}</div><div class="parts"><span class="chip">ý đúng ngay lần đầu</span><span class="chip">Thời gian: ${fmtTime(state.elapsed)}</span><span class="chip">Luyện tập không tính điểm</span></div></div>`;
+  const code=test?makeCode(r):'';
+  return `
+  ${test&&state.timedOut?'<div class="warnbar" role="alert" style="margin:0 0 12px">Đã hết '+(LIMIT[S.mode]/60)+' phút nên bài được nộp tự động. Những ý chưa làm tính là chưa đúng.</div>':''}
+  <section class="card stack" style="margin-top:8px">
+    <div class="score">${head}</div>
+    <p style="margin:0">${comment}</p>
+  </section>
+
+  <section class="card" style="margin-top:16px"><h2 style="margin-bottom:14px">Kết quả theo nội dung kiến thức</h2>
+    ${TKEYS.filter(k=>r.topics[k].n).map(k=>barRow(TOPICS[k].name,r.topics[k])).join('')}
+  </section>
+
+  <section class="card" style="margin-top:16px"><h2 style="margin-bottom:14px">Kết quả theo mức độ</h2>
+    ${Object.keys(LEVELS).filter(k=>r.levels[k].n).map(k=>barRow(LEVELS[k],r.levels[k])).join('')}
+  </section>
+
+  <section class="card" style="margin-top:16px"><h2 style="margin-bottom:6px">Nên ôn gì tiếp theo</h2>
+    ${weak.length?weak.map(t=>`<div class="advice"><h3>${TOPICS[t.k].name}</h3><p><b>Nhớ:</b> ${TOPICS[t.k].rule}</p><p><b>Lưu ý:</b> ${TOPICS[t.k].tip}</p><p class="small muted">Xem lại: ${missed(t.k).join('; ')}.</p></div>`).join(''):'<p class="muted">Không có nội dung nào dưới 80%.</p>'}
+    ${r.errs.length?`<h3 style="margin-top:18px">Những lỗi bạn đã mắc</h3><ul class="plain">${r.errs.map(e=>`<li><b>${e.where}</b> <span class="chip">${TOPICS[e.topic].short}</span><br><span class="muted">${e.text}</span></li>`).join('')}</ul>`:''}
+  </section>
+
+  ${test?`<section style="margin-top:22px"><h2 style="margin-bottom:12px">Xem lại từng câu</h2>${reviewHTML(r)}</section>
+
+  <section class="card codebox" style="margin-top:16px"><h2>Gửi kết quả cho giáo viên</h2>
+    <p class="small" id="sent" role="status" style="margin:0"></p>
+    <p class="muted small" style="margin:0">${SHEET_URL?'Kết quả được gửi tự động. Nếu giáo viên chưa nhận được, hãy sao chép mã dưới đây và gửi qua Zalo.':'Sao chép mã dưới đây và gửi cho giáo viên (Zalo, lớp học trực tuyến).'} Mã chỉ chứa tên, điểm và kết quả theo nội dung.</p>
+    <textarea id="code" readonly rows="3" aria-label="Mã kết quả">${code}</textarea>
+    <div class="row"><button class="btn sm" id="copy">Sao chép mã</button><span class="small muted" id="copied" role="status"></span></div>
+  </section>`:''}
+
+  <div class="row" style="margin-top:22px">
+    ${state.weak.length?`<button class="btn" id="weakpack">Luyện gói ôn điểm yếu</button>`:''}
+    <button class="btn ${state.weak.length?'ghost':''}" id="again">${test?(state.code?'Làm lại đề này':'Làm đề kiểm tra khác'):'Làm gói này lần nữa'}</button>
+    <button class="btn ghost" id="home">Về trang đầu</button>
+  </div>`;
+}
+
+/* ============ Màn hình: giáo viên ============ */
+function teacherHTML(){
+  return `<section class="hero"><h1>Bảng <em>tổng hợp</em> lớp</h1>
+    <p class="lead">Dán mã kết quả bài kiểm tra Bội chung nhỏ nhất của học sinh (bắt đầu bằng ${CODE_PREFIX}), mỗi mã một dòng. Bảng cho thấy điểm từng em và nội dung kiến thức cả lớp còn yếu. Mỗi học sinh nhận một đề khác nhau nhưng cùng cấu trúc, nên điểm vẫn so sánh được.</p></section>
+    <section class="card stack" style="margin-top:18px">
+      <div><label class="fl" for="codes">Mã kết quả</label><textarea id="codes" placeholder="${CODE_PREFIX}eyJ2IjoxLC..."></textarea></div>
+      <div class="row"><button class="btn" id="analyze">Tổng hợp</button><button class="btn ghost" id="clearc">Xóa</button></div>
+      <div id="tout" aria-live="polite"></div>
+    </section>`;
+}
+function decodeCode(line){
+  line=line.trim();if(!line.startsWith(CODE_PREFIX))return null;
+  try{const o=JSON.parse(decodeURIComponent(escape(atob(line.slice(CODE_PREFIX.length)))));if(o&&o.t&&typeof o.s==='number')return o;}catch(e){}
+  return null;
+}
+function analyzeCodes(){
+  const lines=document.getElementById('codes').value.split(/\r?\n/).filter(l=>l.trim());
+  const rows=[],bad=[];let other=0;
+  lines.forEach((l,i)=>{const o=decodeCode(l);if(o)rows.push(o);else{bad.push(i+1);if(/^[A-Z0-9]{2,4}-/.test(l.trim())&&!l.trim().startsWith(CODE_PREFIX))other++;}});
+  const out=document.getElementById('tout');
+  if(!rows.length){out.innerHTML=`<div class="warnbar">${lines.length?`Không đọc được mã nào. Hãy kiểm tra mã đã được sao chép đầy đủ, bắt đầu bằng ${CODE_PREFIX}.${other?' Có mã của bài khác (ví dụ Tam giác bằng nhau): hãy dán mã đó ở trang của bài ấy.':''}`:'Hãy dán ít nhất một mã kết quả.'}</div>`;return;}
+  const cell=o=>{if(!o||!o[1])return '<td class="cell">–</td>';const p=Math.round(100*o[0]/o[1]);return `<td class="cell ${status(p)[0]}">${p}%</td>`;};
+  const avg=TKEYS.map(k=>{let c=0,n=0;rows.forEach(r=>{if(r.t[k]){c+=r.t[k][0];n+=r.t[k][1];}});return [c,n];});
+  const mean=rows.reduce((s,r)=>s+r.s,0)/rows.length;
+  const timed=rows.filter(r=>typeof r.m==='number'),meanT=timed.length?timed.reduce((s,r)=>s+r.m,0)/timed.length:null;
+  const tcell=r=>typeof r.m==='number'?fmtTime(r.m):'–';
+  const flag=r=>(typeof r.m==='number'&&r.m<0.25*(r.L||1800)&&r.s<5)?' <span class="chip">Làm nhanh, điểm thấp</span>':'';
+  const chips=r=>(r.c?` <span class="chip">Lớp ${esc(r.c)}</span>`:'')+(r.q==='quick'?' <span class="chip">Nhanh 5 phút</span>':'')+(r.k?` <span class="chip">Mã đề ${esc(r.k)}</span>`:'');
+  const weakCount=TKEYS.map(k=>rows.filter(r=>r.t[k]&&r.t[k][1]&&100*r.t[k][0]/r.t[k][1]<50).length);
+  const worst=TKEYS.map((k,i)=>({k,p:avg[i][1]?100*avg[i][0]/avg[i][1]:100})).sort((a,b)=>a.p-b.p)[0];
+  out.innerHTML=`${bad.length?`<div class="warnbar" style="margin:0 0 12px">Bỏ qua ${bad.length} dòng không đọc được (dòng ${bad.join(', ')}).${other?' Có mã của bài khác, hãy dán ở trang của bài ấy.':''}</div>`:''}
+    <p style="margin:0 0 10px"><b>${rows.length}</b> học sinh · điểm trung bình <b>${fmt(mean)}</b>. Nội dung cả lớp còn yếu nhất: <b>${TOPICS[worst.k].name}</b> (${Math.round(worst.p)}%).</p>
+    <div class="tablewrap"><table><thead><tr><th>Học sinh</th><th>Điểm</th><th>Thời gian</th>${TKEYS.map(k=>`<th>${TOPICS[k].short}</th>`).join('')}</tr></thead><tbody>
+    ${rows.sort((a,b)=>a.s-b.s).map(r=>`<tr><td>${esc(r.n)}${chips(r)}${flag(r)}</td><td><b>${fmt(r.s)}</b></td><td>${tcell(r)}</td>${TKEYS.map(k=>cell(r.t[k])).join('')}</tr>`).join('')}
+    <tr><td><b>Cả lớp</b></td><td><b>${fmt(mean)}</b></td><td>${meanT===null?'–':fmtTime(meanT)}</td>${avg.map(cell).join('')}</tr>
+    <tr><td class="muted">Số em dưới 50%</td><td></td><td></td>${weakCount.map(n=>`<td class="cell">${n}</td>`).join('')}</tr>
+    </tbody></table></div>
+    <p class="small muted" style="margin:10px 0 0">Màu: xanh từ 80%, vàng từ 50% đến dưới 80%, đỏ dưới 50%. Các em được xếp từ điểm thấp đến cao để dễ thấy em cần hỗ trợ. Nhãn "Làm nhanh, điểm thấp" hiện khi em nộp bài trong chưa đầy một phần tư thời gian cho phép mà dưới 5 điểm, thường là em chưa làm kỹ nên cần hỏi lại.</p>`;
+}
+
+/* ============ Điều hướng và sự kiện ============ */
+function render(){
+  const gv=location.hash==='#giao-vien';
+  document.getElementById('nav-hs').setAttribute('aria-current',gv?'false':'page');
+  document.getElementById('nav-gv').setAttribute('aria-current',gv?'page':'false');
+  if(gv){stopTimer();$app.innerHTML=teacherHTML();return;}
+  if(state.view==='home'){stopTimer();$app.innerHTML=homeHTML();}
+  else if(state.view==='quiz'){$app.innerHTML=quizHTML();updateProgress();startTimer();}
+  else{stopTimer();$app.innerHTML=resultHTML();if(SHEET_URL&&S.mode!=='practice'&&state.sentCode!==makeCode(state.result))sendResult();else if(SHEET_URL&&S.mode!=='practice')setSent('Đã gửi kết quả cho giáo viên.');}
+  window.scrollTo(0,0);
+}
+function normCode(s){return String(s||'').trim().toUpperCase().replace(/\s+/g,'');}
+function withCode(mode,fn){
+  if(!state.code){fn();return;}
+  RNG=mulberry32(hashStr(mode+'|'+state.code));SEEDED=true;
+  try{fn();}finally{RNG=Math.random;SEEDED=false;}
+}
+function startTest(){withCode('test',buildTest);state.view='quiz';render();}
+function startQuick(){withCode('quick',buildQuick);state.view='quiz';render();}
+function startPack(spec){buildPractice(spec);state.view='quiz';render();}
+function parsePack(s){
+  if(s==='weak')return {kind:'weak',topics:state.weak.slice()};
+  const [kind,val]=s.split(':');return {kind,val};
+}
+function finish(force){
+  const test=S.mode!=='practice';
+  const left=test?totalItems()-answered():S.list.length-doneCount();
+  if(left>0&&!force){
+    const w=document.getElementById('warn');
+    w.innerHTML=test
+      ?`<div class="warnbar" role="alert">Còn <b>${left}</b> ý chưa trả lời. Những ý này sẽ tính là chưa đúng.<div class="row" style="margin-top:10px"><button class="btn sm" id="force">Vẫn nộp bài</button><button class="btn ghost sm" id="keep">Làm tiếp</button></div></div>`
+      :`<div class="warnbar" role="alert">Còn <b>${left}</b> câu chưa kiểm tra xong. Những câu này sẽ tính là chưa đúng ngay lần đầu.<div class="row" style="margin-top:10px"><button class="btn sm" id="force">Vẫn xem kết quả</button><button class="btn ghost sm" id="keep">Làm tiếp</button></div></div>`;
+    w.scrollIntoView({block:'center'});return;
+  }
+  stopTimer();
+  state.elapsed=Math.floor((Date.now()-state.t0)/1000);
+  if(test)state.elapsed=Math.min(state.elapsed,LIMIT[S.mode]);
+  state.result=grade();updateWeak(state.result);state.view='result';render();
+}
+document.addEventListener('click',e=>{
+  const pk=e.target.closest('[data-pack]');
+  if(pk&&!pk.disabled){startPack(parsePack(pk.dataset.pack));return;}
+  const ck=e.target.closest('.chk');
+  if(ck){practiceCheck(ck.dataset.q);return;}
+  const id=e.target.id;
+  if(id==='start'||id==='startq'){state.name=document.getElementById('nm').value.trim();state.cls=normCode(document.getElementById('cls').value);state.code=normCode(document.getElementById('mcode').value);
+    if(!state.cls){document.getElementById('clserr').textContent='Hãy nhập lớp của bạn (ví dụ 6A1) trước khi làm bài kiểm tra.';document.getElementById('cls').focus();return;}if(id==='start')startTest();else startQuick();}
+  else if(id==='submit')finish(false);
+  else if(id==='force')finish(true);
+  else if(id==='keep')document.getElementById('warn').innerHTML='';
+  else if(id==='back'){state.view='home';render();}
+  else if(id==='again'){if(S.mode==='test')startTest();else if(S.mode==='quick')startQuick();else startPack(S.spec.kind==='weak'?{kind:'weak',topics:state.weak.length?state.weak.slice():S.spec.topics}:S.spec);}
+  else if(id==='weakpack')startPack({kind:'weak',topics:state.weak.slice()});
+  else if(id==='home'){state.view='home';render();}
+  else if(id==='copy'){
+    const t=document.getElementById('code'),m=document.getElementById('copied');
+    t.focus();t.select();
+    (navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(()=>{m.textContent='Đã sao chép.';}).catch(()=>{m.textContent='Hãy nhấn giữ vùng chọn rồi chọn Sao chép.';});
+  }
+  else if(id==='resend')sendResult();
+  else if(id==='analyze')analyzeCodes();
+  else if(id==='clearc'){document.getElementById('codes').value='';document.getElementById('tout').innerHTML='';}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;if(t.type!=='radio')return;
+  const m=t.name.match(/^(.+)-(\d)$/);
+  if(m){const a=state.ans[m[1]]||(state.ans[m[1]]=[]);a[+m[2]]=t.value==='1';}
+  else state.ans[t.name]=+t.value;
+  updateProgress();
+});
+document.addEventListener('input',e=>{
+  const id=e.target.dataset&&e.target.dataset.sa;
+  if(id){state.ans[id]=e.target.value;updateProgress();}
+});
+window.addEventListener('hashchange',render);
+render();
+</script>
+</body>
+</html>

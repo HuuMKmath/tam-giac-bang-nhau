@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luyện toán THCS – Các bài</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f2f6fc; --card:#ffffff; --ink:#13203a; --muted:#54627f; --line:#cdd7e9;
+  --grid:rgba(52,96,170,.08); --accent:#1f4fd8; --mark:#d9342b;
+  --display:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{--paper:#0d1730;--card:#142245;--ink:#e8eefc;--muted:#9fb0d4;--line:#2b3c6b;--grid:rgba(140,170,255,.07);--accent:#8aa9ff;--mark:#ff7f72;color-scheme:dark;}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;color:var(--ink);font:16px/1.65 var(--body);-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 72px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.3rem,8vw,3.6rem);font-weight:700;letter-spacing:-.01em;padding-top:40px}
+h1 em{color:var(--accent);font-weight:600}
+h2{font-size:.78rem;font-family:var(--body);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mark);margin:34px 0 10px}
+.lead{font-size:1.08rem;color:var(--muted);max-width:56ch;margin:14px 0 0}
+.list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+a.lesson{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:16px 18px;min-height:130px}
+a.lesson:hover{border-color:var(--accent)}
+a.lesson h3{font-size:1.2rem}
+a.lesson p{margin:0;font-size:.92rem;color:var(--muted)}
+.go{margin-top:auto;font-weight:600;font-size:.9rem;color:var(--accent)}
+.soon{border:1.5px dashed var(--line);border-radius:12px;padding:16px 18px;color:var(--muted);font-size:.92rem}
+.note{margin-top:34px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;font-size:.92rem;color:var(--muted)}
+.note b{color:var(--ink)}
+.chip{display:inline-block;font-size:.74rem;font-weight:600;padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted);background:var(--paper)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Luyện toán <em>THCS</em></h1>
+  <p class="lead">Chọn bài để luyện tập hoặc làm bài kiểm tra. Mỗi bài chấm tự động ngay trên trình duyệt, phân tích phần kiến thức còn yếu và có mã kết quả để gửi giáo viên.</p>
+
+  <h2>Lớp 6 · Toán 6 Kết nối tri thức</h2>
+  <div class="list">
+    <a class="lesson" href="../boi-chung-nho-nhat/">
+      <h3>Bội chung. Bội chung nhỏ nhất</h3>
+      <p>Bội chung, tìm BCNN bằng phân tích ra thừa số nguyên tố, suy ra bội chung, bài toán thực tế.</p>
+      <span><span class="chip">Mã kết quả BC6-</span></span>
+      <span class="go">Mở bài →</span>
+    </a>
+  </div>
+
+  <h2>Lớp 7 · Toán 7 Kết nối tri thức</h2>
+  <div class="list">
+    <a class="lesson" href="../">
+      <h3>Tam giác bằng nhau</h3>
+      <p>Hai tam giác bằng nhau và ba trường hợp bằng nhau: c.c.c, c.g.c, g.c.g.</p>
+      <span><span class="chip">Mã kết quả TG7-</span></span>
+      <span class="go">Mở bài →</span>
+    </a>
+  </div>
+
+  <h2>Sắp có</h2>
+  <div class="soon">Các bài của lớp 6, 7, 8, 9 sẽ được thêm dần vào trang này.</div>
+
+  <div class="note"><b>Dành cho giáo viên:</b> mỗi bài có mã kết quả riêng (BC6-, TG7-). Học sinh gửi mã sau khi nộp bài kiểm tra; thầy cô mở mục Giáo viên của đúng bài rồi dán mã vào để xem bảng tổng hợp.</div>
+</div>
+</body>
+</html>
